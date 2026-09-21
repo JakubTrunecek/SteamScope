@@ -9,10 +9,10 @@ Verified the six endpoints listed in API_RESEARCH.md. Findings support achieveme
 - [x] Inspect repository and preserve existing history.
 - [x] Record project context, audit results and locked decisions.
 - [x] Establish frontend/ and worker/ boundaries and secret exclusions.
-- [ ] Create React + TypeScript + Vite shell with four MVP routes.
-- [ ] Create Cloudflare Worker health endpoint and configuration.
-- [ ] Add reproducible dependency installation and verification commands.
-- [ ] Verify frontend build, TypeScript and Worker behavior.
+- [x] Create React + TypeScript + Vite shell with four MVP routes.
+- [x] Create Cloudflare Worker health endpoint and configuration.
+- [x] Add reproducible dependency installation and verification commands.
+- [x] Verify frontend build, TypeScript and Worker behavior.
 
 This milestone establishes a runnable shell, not live Steam integration or production deployment.
 

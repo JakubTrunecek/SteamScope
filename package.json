@@ -1,0 +1,16 @@
+{
+  "name": "steamscope",
+  "version": "0.0.2",
+  "private": true,
+  "packageManager": "pnpm@11.19.0",
+  "engines": { "node": ">=22.12.0" },
+  "scripts": {
+    "dev:frontend": "pnpm --filter @steamscope/frontend dev",
+    "dev:worker": "pnpm --filter @steamscope/worker dev",
+    "build": "pnpm --filter @steamscope/frontend build",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm --filter @steamscope/worker test",
+    "check": "pnpm typecheck && pnpm test && pnpm build",
+    "worker:dry-run": "pnpm --filter @steamscope/worker dry-run"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "@steamscope/worker",
+  "version": "0.0.2",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --port 8787",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "dry-run": "wrangler deploy --env production --dry-run --outdir dist",
+    "deploy": "wrangler deploy --env production"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260920.1",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.1",
+    "wrangler": "^4.135.0"
+  }
+}
