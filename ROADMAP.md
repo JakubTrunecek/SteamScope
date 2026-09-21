@@ -16,13 +16,21 @@ Verified the six endpoints listed in API_RESEARCH.md. Findings support achieveme
 
 This milestone establishes a runnable shell, not live Steam integration or production deployment.
 
-## Next — Steam integration
+## 0.0.3 — First Live Data (complete locally)
 
-- Define stable API contracts and validate SteamID64/app IDs.
-- Implement fixed Steam endpoint adapters, timeouts and sanitized errors.
-- Profile/library/recently played data, then per-game achievements/schema/stats.
+- [x] Shared API contracts and individual SteamID64 validation.
+- [x] Fixed Steam adapters, timeouts and sanitized errors.
+- [x] Profile, owned library and recently played data.
+- [x] Search, sort and links to a game's name and playtime.
+- [x] Independent loading, empty, unavailable and error states.
+- [x] Request limits and bounded ephemeral cache.
+- [x] Live verification: 252 owned games and 4 recently played games.
+
+## 0.0.4 — Game Detail capabilities
+
+- Per-game achievements, global percentages, schema and generic Detailed Stats.
 - Distinguish available, empty, private, unsupported and failed responses where evidence permits.
-- Add request limits, bounded caching and deployment configuration before public traffic.
+- Preserve actual internal names; only use schema-provided labels.
 
 ## MVP completion
 

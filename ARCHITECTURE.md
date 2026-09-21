@@ -15,9 +15,17 @@ Browser → React/TypeScript/Vite frontend (GitHub Pages) → Cloudflare Worker 
 
 ## API evolution
 
-Skeleton: `GET /api/health` returns `{ "status": "ok", "service": "steamscope-worker" }`. No Steam requests in this milestone.
+`GET /api/health` returns `{ "status": "ok", "service": "steamscope-worker" }` without credentials.
 
-Integration: allowlisted routes only, never an arbitrary URL proxy. Validate identifiers server-side. CORS uses an explicit allowed frontend origin; CORS is not authentication or abuse prevention. Add rate limiting and cache policy before public Steam endpoints go live. Translate upstream failures into stable client errors without leaking details.
+0.0.3 implements `GET /api/players/:steamId/profile`, `/library`, and `/recent`. Types and individual SteamID64 validation are shared in `shared/api.ts`. Profile uses GetPlayerSummaries v2; library and recent use IPlayerService v1 with input_json. Upstream host is fixed to `https://api.steampowered.com`. Caller query strings are rejected. Manual redirect mode plus non-2xx rejection prevents forwarding credentials on redirects. Requests time out after 8 seconds, including body consumption. Errors expose only stable codes; no upstream response bodies, URLs or exception messages.
+
+Responses use a discriminated `status` (`available` / `unavailable`). Missing games and count mean private-or-unavailable; an explicit zero count means empty. Malformed or inconsistent responses fail with 502 instead of fabricating data. Missing playtime is null; zero remains zero. Profile visibility does not determine game-details visibility. Profile/library/recent requests are independent so one failure does not hide successful sections.
+
+## Request protection and cache
+
+CORS uses one explicit frontend origin; it is not authentication. Cloudflare REQUEST_LIMITER allows 30 requests/minute per connecting IP, including cache hits. STEAM_LIMITER allows 60 upstream calls/minute per location across all clients. Anonymous access has no stable user identity; shared-IP users share the request allowance. Missing bindings fail closed. These are approximate per-location limits, not a global quota. Confirm namespace IDs are unique before deployment and evaluate global quota protection before wider public traffic.
+
+An isolate-local in-memory cache stores normalized successful available responses for 60 seconds, at most 100 entries. At most 20 distinct upstream requests may be pending; identical requests share a promise. Errors and ambiguous/private results are not cached. This cache is ephemeral (no DB, persisted history or tracking). Privacy changes may take up to the TTL to be reflected. Browser responses use `Cache-Control: no-store`. Worker observability is disabled and application code does not log upstream requests or credentials.
 
 ## Data model
 
@@ -29,3 +37,6 @@ Achievements and stats have independent per-game capability states. A failed req
 
 - [Vite guide](https://vite.dev/guide/)
 - [Cloudflare Worker secrets](https://developers.cloudflare.com/workers/configuration/secrets/)
+- [Steam IPlayerService](https://partner.steamgames.com/doc/webapi/IPlayerService)
+- [Steam ISteamUser](https://partner.steamgames.com/doc/webapi/ISteamUser)
+- [Cloudflare rate limiting](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/)

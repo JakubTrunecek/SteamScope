@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
-
-const steamIdPattern = /^\d{17}$/;
+import { isSteamId } from '../../shared/api';
+import { Overview, Library, GameSummary } from './SteamScreens';
 
 function Health() {
   const [status, setStatus] = useState('Checking connection…');
@@ -31,8 +31,8 @@ function Home() {
   const [error, setError] = useState('');
   function submit(event: FormEvent) {
     event.preventDefault();
-    if (!steamIdPattern.test(steamId.trim())) {
-      setError('Enter a 17-digit SteamID64.');
+    if (!isSteamId(steamId.trim())) {
+      setError('Enter a valid 17-digit individual SteamID64.');
       return;
     }
     location.hash = `/profile/${steamId.trim()}`;
@@ -48,7 +48,7 @@ function Home() {
         aria-invalid={Boolean(error)} aria-describedby={error ? 'id-error' : undefined} />
         <button type="submit">Explore profile →</button></div>
       {error && <p id="id-error" role="alert">{error}</p>}
-      <p className="muted">Project preview: live Steam data is not connected yet.</p>
+      <p className="muted">Explore the profile and game details Steam makes visible. No sign-in required.</p>
     </form>
     <div className="grid">
       <section className="card"><h2>Your library</h2><p>Browse owned games and playtime.</p></section>
@@ -65,19 +65,16 @@ function ProfileNav({ id }: { id: string }) {
 function Screen({ path }: { path: string }) {
   if (path === '/' || path === '') return <Home />;
   const match = /^\/profile\/(\d{17})(?:\/(library)|\/game\/([1-9]\d*))?$/.exec(path);
-  if (!match) return <><h1>Page not found</h1><a href="#/">Return home</a></>;
+  if (!match || !isSteamId(match[1]) || (match[3] && (!Number.isSafeInteger(Number(match[3])) || Number(match[3]) > 4294967295))) return <><h1>Page not found</h1><a href="#/">Return home</a></>;
   const [, id, library, appId] = match;
   return <>
     <ProfileNav id={id} />
     <p className="eyebrow">STEAM ID {id}</p>
     <h1>{appId ? 'Game Detail' : library ? 'Library' : 'Profile Overview'}</h1>
-    <section className="card"><h2>{appId ? `App ${appId}` : 'Ready for your Steam data'}</h2>
-      <p>{library ? 'Owned games and playtime will appear here.' : appId ? 'Game information will appear here.' : 'Profile information and recently played games will appear here.'}</p>
-      <p className="muted">Steam integration is the next milestone. No live data has been loaded.</p>
-    </section>
+    {appId ? <GameSummary id={id} appId={Number(appId)} /> : library ? <Library id={id} /> : <Overview id={id} />}
     {appId && <div className="grid">
-      <section className="card"><h2>Achievements</h2><p>Availability has not been checked for this game.</p></section>
-      <section className="card"><h2>Detailed Stats</h2><p>Availability has not been checked. Returned statistics and their original names will appear here.</p></section>
+      <section className="card"><h2>Achievements</h2><p>Coming in the next milestone. Availability has not been checked for this game.</p></section>
+      <section className="card"><h2>Detailed Stats</h2><p>Coming in the next milestone. Availability has not been checked. Statistics will preserve their original names.</p></section>
     </div>}
   </>;
 }
@@ -91,7 +88,7 @@ export function App() {
   }, []);
   return <>
     <a className="skip" href="#main" onClick={(event) => { event.preventDefault(); document.getElementById('main')?.focus(); }}>Skip to content</a>
-    <header><a className="brand" href="#/">Steam<span>Scope</span></a><span className="badge">0.0.2 · Preview</span></header>
+    <header><a className="brand" href="#/">Steam<span>Scope</span></a><span className="badge">0.0.3 · Preview</span></header>
     <main id="main" tabIndex={-1}><Screen key={path} path={path} /></main>
     <footer><span>SteamScope · Independent Steam explorer</span><Health /></footer>
   </>;

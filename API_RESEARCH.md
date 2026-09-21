@@ -35,3 +35,11 @@ These percentages describe one account at audit time, not all Steam games. Lack 
 ## Follow-up research
 
 Capture sanitized response shapes during integration, verify error/visibility behavior and schema label coverage, and establish rate-limit/cache behavior. Never commit API keys or raw request URLs containing credentials.
+
+## 0.0.3 live integration verification — 2026-09-21
+
+Through the local Cloudflare Worker, the audit account returned 252 owned games, an available public profile, and 4 recently played games. GetPlayerSummaries v2 was newly verified in this milestone; it was not one of the six R-001 endpoints. Actual library search, sorting and game navigation were checked in the browser. No raw responses or credentials are saved in this document.
+
+IPlayerService calls use input_json and include played free games for library results. Counts may change over time. Privacy/error cases are covered with synthetic fixtures, not claimed as live-account observations.
+
+Sources: [IPlayerService](https://partner.steamgames.com/doc/webapi/IPlayerService), [ISteamUser](https://partner.steamgames.com/doc/webapi/ISteamUser).

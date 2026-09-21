@@ -6,6 +6,8 @@ Steam profile, library and game statistics explorer.
 
 - 0.0.1 / R-001 Steam API Capability Audit: complete.
 - 0.0.2 Project Skeleton: complete locally; not deployed. Four frontend routes, health-only Worker, workspace lockfile and verification scripts are ready.
+- 0.0.3 First Live Data: implemented and verified locally. Profile, library, recently played, library search/sort and basic game information use real Steam data. Skeleton commits were pushed to GitHub.
+- Next: 0.0.4 Game Detail capabilities (achievements and generic Detailed Stats). Production hosting has not been deployed.
 - Source: owner handoff on 2026-09-21; original raw audit responses are not in this repository.
 
 ## Locked MVP
@@ -27,3 +29,5 @@ See [roadmap](../ROADMAP.md), [architecture](../ARCHITECTURE.md), [research](../
 ## Verification (2026-09-21)
 
 TypeScript checks, five Worker boundary tests and the frontend production build passed. Wrangler dry-run passed; local browser smoke checks covered input validation, all four routes and successful Worker health connection. Steam endpoints were not called and no API key was needed.
+
+0.0.3 adds adapter/cache/timeout/validation tests and live Worker checks. The audit account returned 252 games, a public profile and 4 recently played games. A local ignored `worker/.dev.vars` supplies the key; never read or print it during routine context recovery. No secret is needed for automated tests.

@@ -3,11 +3,20 @@
   "name": "steamscope-api",
   "main": "src/index.ts",
   "compatibility_date": "2026-09-21",
+  "observability": { "enabled": false },
+  "ratelimits": [
+    { "name": "REQUEST_LIMITER", "namespace_id": "1001", "simple": { "limit": 30, "period": 60 } },
+    { "name": "STEAM_LIMITER", "namespace_id": "1002", "simple": { "limit": 60, "period": 60 } }
+  ],
   "vars": {
     "ALLOWED_ORIGIN": "http://localhost:5173"
   },
   "env": {
     "production": {
+      "ratelimits": [
+        { "name": "REQUEST_LIMITER", "namespace_id": "1001", "simple": { "limit": 30, "period": 60 } },
+        { "name": "STEAM_LIMITER", "namespace_id": "1002", "simple": { "limit": 60, "period": 60 } }
+      ],
       "vars": {
         "ALLOWED_ORIGIN": "https://jakubtrunecek.github.io"
       }

@@ -3,7 +3,7 @@ Steam profile, library and game statistics explorer
 
 ## Status
 
-0.0.2 Project Skeleton. R-001 audit is complete; this shell does not fetch live Steam data yet.
+0.0.3 First Live Data. Profile Overview, Library and recently played games use the Steam API through the Worker. Game Detail shows name and playtime; achievements and generic Detailed Stats follow in 0.0.4. Not deployed publicly yet.
 
 ## Local development
 
@@ -20,7 +20,9 @@ pnpm dev:worker
 pnpm dev:frontend
 ```
 
-Open `http://localhost:5173/SteamScope/`. Worker health: `http://localhost:8787/api/health`. No Steam key is needed for the skeleton.
+Open `http://localhost:5173/SteamScope/`. Worker health: `http://localhost:8787/api/health`.
+
+For live Steam data, create `worker/.dev.vars` locally, enter `STEAM_API_KEY=` followed by your own key, and save. This file is ignored by Git. Restart the Worker if it does not reload the secret automatically. Never share the file, commit it, or place the key in a `VITE_` variable. Health works without a key; data endpoints return a configuration error when it is missing.
 
 Routes:
 
@@ -29,7 +31,7 @@ Routes:
 - `#/profile/76561198004260198/library` — Library
 - `#/profile/76561198004260198/game/550` — Game Detail
 
-The ID in these examples is the audit account, not an automatically loaded default profile. Screens explicitly show that live data has not been loaded.
+The ID in these examples is the audit account, not an automatically loaded default profile. Profile sections load independently. Library supports search, sorting and navigation to a game. Private/ambiguous, empty, loading and error states are separate.
 
 ## Verification
 
@@ -49,7 +51,7 @@ pnpm exec wrangler secret put STEAM_API_KEY --env production
 pnpm exec wrangler deploy --env production
 ```
 
-Enter the key through Wrangler's prompt; never paste it into a command, source file or frontend variable. The production origin is configured as `https://jakubtrunecek.github.io`. Local Steam integration may later use an ignored `worker/.dev.vars` file. Health works without credentials. Public Steam routes require rate-limit/cache decisions before implementation and deployment.
+Enter the key through Wrangler's prompt; never paste it into a command, source file or frontend variable. The production origin is configured as `https://jakubtrunecek.github.io`. Local `.dev.vars` secrets are not deployed. Before production, confirm that rate-limit namespace IDs 1001 and 1002 are unused by other Workers on the account. Current limits are per Cloudflare location and do not provide a global Steam quota guarantee. See ARCHITECTURE.md for limits and cache policy.
 
 ## Project documentation
 
