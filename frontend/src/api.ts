@@ -3,6 +3,7 @@ import type { ApiErrorCode } from '../../shared/api';
 
 const messages: Record<ApiErrorCode, string> = {
   invalid_steam_id: 'Enter a valid individual SteamID64.',
+  invalid_app_id: 'This game ID is not valid.',
   not_configured: 'Steam access is not configured on the server yet.',
   rate_limited: 'Too many requests. Please wait a minute before trying again.',
   steam_unavailable: 'Steam is unavailable right now. Please try again.',

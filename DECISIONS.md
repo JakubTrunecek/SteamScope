@@ -25,3 +25,11 @@ Decisions D-001 through D-007 are locked by the owner handoff (2026-09-21).
 - D-013: Missing game counts are ambiguous unavailable data; only explicit zero counts establish an empty result. Missing playtime is null.
 - D-014: 8-second upstream timeout; no redirects; bounded 60-second isolate cache; Cloudflare rate-limit bindings. No persistent storage or logs of upstream credentials. Limits are per location, not a global quota.
 - D-015: 0.0.3 covers first live data. Per-game achievements and Detailed Stats are the next milestone, 0.0.4, and remain in MVP.
+
+## 0.0.4 implementation choices
+
+- D-016: Independent per-game endpoints for player achievements, player stats, schema and global percentages. Metadata failures cannot erase player results.
+- D-017: Join labels and global rates by exact internal name. Keep unmatched names and values; never fill missing player stats with schema defaults.
+- D-018: Only explicit Steam failures establish private/unsupported states. An empty 400 response is ambiguous not-exposed data; outages remain errors.
+- D-019: Achievement progress uses only the selected game's returned player list. Unknown unlock dates are null. Hidden locked descriptions remain concealed in the UI.
+- D-020: Player caches include app and player; public metadata caches include app. One request token per actual upstream call, even when the detail loads several independent sections.

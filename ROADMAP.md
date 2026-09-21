@@ -26,11 +26,19 @@ This milestone establishes a runnable shell, not live Steam integration or produ
 - [x] Request limits and bounded ephemeral cache.
 - [x] Live verification: 252 owned games and 4 recently played games.
 
-## 0.0.4 — Game Detail capabilities
+## 0.0.4 — Game Detail capabilities (complete locally)
 
-- Per-game achievements, global percentages, schema and generic Detailed Stats.
-- Distinguish available, empty, private, unsupported and failed responses where evidence permits.
-- Preserve actual internal names; only use schema-provided labels.
+- [x] Per-game achievements, global percentages, schema and generic Detailed Stats.
+- [x] Distinguish available, empty, private, unsupported and failed responses where evidence permits.
+- [x] Preserve actual internal names; only use schema-provided labels.
+- [x] Search stats and achievements, filter unlocked/locked, sort stats and expand long lists.
+- [x] Verify all five audited stat counts against live data and exercise unsupported/ambiguous responses.
+
+## Next — MVP hardening and deployment
+
+- Responsive/accessibility review and automated frontend interaction checks.
+- CI verification, review production rate-limit namespaces and quota protection.
+- Configure GitHub Pages and Cloudflare production secrets; deploy and smoke-test both environments.
 
 ## MVP completion
 

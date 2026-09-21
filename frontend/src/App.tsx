@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { isSteamId } from '../../shared/api';
+import { isAppId, isSteamId } from '../../shared/api';
+import { GameCapabilities } from './GameCapabilities';
 import { Overview, Library, GameSummary } from './SteamScreens';
 
 function Health() {
@@ -65,17 +66,14 @@ function ProfileNav({ id }: { id: string }) {
 function Screen({ path }: { path: string }) {
   if (path === '/' || path === '') return <Home />;
   const match = /^\/profile\/(\d{17})(?:\/(library)|\/game\/([1-9]\d*))?$/.exec(path);
-  if (!match || !isSteamId(match[1]) || (match[3] && (!Number.isSafeInteger(Number(match[3])) || Number(match[3]) > 4294967295))) return <><h1>Page not found</h1><a href="#/">Return home</a></>;
+  if (!match || !isSteamId(match[1]) || (match[3] && !isAppId(match[3]))) return <><h1>Page not found</h1><a href="#/">Return home</a></>;
   const [, id, library, appId] = match;
   return <>
     <ProfileNav id={id} />
     <p className="eyebrow">STEAM ID {id}</p>
     <h1>{appId ? 'Game Detail' : library ? 'Library' : 'Profile Overview'}</h1>
     {appId ? <GameSummary id={id} appId={Number(appId)} /> : library ? <Library id={id} /> : <Overview id={id} />}
-    {appId && <div className="grid">
-      <section className="card"><h2>Achievements</h2><p>Coming in the next milestone. Availability has not been checked for this game.</p></section>
-      <section className="card"><h2>Detailed Stats</h2><p>Coming in the next milestone. Availability has not been checked. Statistics will preserve their original names.</p></section>
-    </div>}
+    {appId && <GameCapabilities id={id} appId={appId} />}
   </>;
 }
 
@@ -88,7 +86,7 @@ export function App() {
   }, []);
   return <>
     <a className="skip" href="#main" onClick={(event) => { event.preventDefault(); document.getElementById('main')?.focus(); }}>Skip to content</a>
-    <header><a className="brand" href="#/">Steam<span>Scope</span></a><span className="badge">0.0.3 · Preview</span></header>
+    <header><a className="brand" href="#/">Steam<span>Scope</span></a><span className="badge">0.0.4 · Preview</span></header>
     <main id="main" tabIndex={-1}><Screen key={path} path={path} /></main>
     <footer><span>SteamScope · Independent Steam explorer</span><Health /></footer>
   </>;

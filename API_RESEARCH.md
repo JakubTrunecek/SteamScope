@@ -43,3 +43,15 @@ Through the local Cloudflare Worker, the audit account returned 252 owned games,
 IPlayerService calls use input_json and include played free games for library results. Counts may change over time. Privacy/error cases are covered with synthetic fixtures, not claimed as live-account observations.
 
 Sources: [IPlayerService](https://partner.steamgames.com/doc/webapi/IPlayerService), [ISteamUser](https://partner.steamgames.com/doc/webapi/ISteamUser).
+
+## 0.0.4 live game capabilities — 2026-09-21
+
+The same account returned the audited Detailed Stats counts through the local Worker: Left 4 Dead 2 317, CS2 193, HUMANKIND 49, Witcher 3 34 and Kingdom Come: Deliverance 13.
+
+Left 4 Dead 2 returned 101 player achievements (26 unlocked), 101 global percentage entries and a schema containing 733 stat definitions and 101 achievement definitions. This confirms why player stats must not be populated from schema defaults: schema definitions exceed the 317 returned player values.
+
+Max Payne returned HTTP 400 with an empty object for GetUserStatsForGame, which remains ambiguous `not_exposed`. GetPlayerAchievements returned HTTP 400 with an explicit no-stats failure, classified as unsupported for that request. Do not infer one capability's state from another endpoint.
+
+Private profiles and malformed payloads are covered by synthetic tests; they were not newly verified against private live accounts. Raw upstream payloads and request URLs are not stored in the repository.
+
+Reference: [ISteamUserStats methods and parameters](https://partner.steamgames.com/doc/webapi/ISteamUserStats).

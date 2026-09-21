@@ -1,8 +1,8 @@
-import type { ApiErrorCode, Game, GamesResult, ProfileResult } from '../../shared/api';
-export class ApiError extends Error {
-  constructor(public code: ApiErrorCode, public status: number) { super(code); }
-}
-export type Resource = 'profile' | 'library' | 'recent';
+import type { Game, GamesResult, ProfileResult, StatsResult, AchievementsResult, SchemaResult, GlobalResult } from '../../shared/api';
+import { ApiError } from './errors';
+import { explicitFailure, parseAchievements, parseGlobal, parseSchema, parseStats } from './capabilities';
+export { ApiError } from './errors';
+export type Resource = 'profile' | 'library' | 'recent' | 'stats' | 'achievements' | 'schema' | 'global';
 function record(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new ApiError('invalid_steam_response', 502);
   return value as Record<string, unknown>;
@@ -41,28 +41,54 @@ export function parseProfile(body: unknown, steamId: string): ProfileResult {
   return { status: 'available', steamId, name: player.personaname,
     visibility: player.communityvisibilitystate === 3 ? 'public' : [1, 2].includes(Number(player.communityvisibilitystate)) ? 'private' : 'unknown' };
 }
-export async function fetchSteam(resource: Resource, steamId: string, key: string, upstream: typeof fetch): Promise<GamesResult | ProfileResult> {
-  const endpoint = resource === 'profile' ? 'ISteamUser/GetPlayerSummaries/v0002/'
-    : resource === 'library' ? 'IPlayerService/GetOwnedGames/v0001/' : 'IPlayerService/GetRecentlyPlayedGames/v0001/';
+export async function fetchSteam(resource: Resource, steamId: string, key: string, upstream: typeof fetch, appId?: string): Promise<GamesResult | ProfileResult | StatsResult | AchievementsResult | SchemaResult | GlobalResult> {
+  const endpoints: Record<Resource, string> = {
+    profile: 'ISteamUser/GetPlayerSummaries/v0002/', library: 'IPlayerService/GetOwnedGames/v0001/', recent: 'IPlayerService/GetRecentlyPlayedGames/v0001/',
+    stats: 'ISteamUserStats/GetUserStatsForGame/v2/', achievements: 'ISteamUserStats/GetPlayerAchievements/v1/',
+    schema: 'ISteamUserStats/GetSchemaForGame/v2/', global: 'ISteamUserStats/GetGlobalAchievementPercentagesForApp/v2/',
+  };
+  const endpoint = endpoints[resource];
   const url = new URL(endpoint, 'https://api.steampowered.com/');
-  url.searchParams.set('key', key);
+  if (resource !== 'global') url.searchParams.set('key', key);
   url.searchParams.set('format', 'json');
   if (resource === 'profile') url.searchParams.set('steamids', steamId);
-  else url.searchParams.set('input_json', JSON.stringify(resource === 'library'
+  else if (resource === 'library' || resource === 'recent') url.searchParams.set('input_json', JSON.stringify(resource === 'library'
     ? { steamid: steamId, include_appinfo: true, include_played_free_games: true }
     : { steamid: steamId, count: 0 }));
+  else {
+    url.searchParams.set(resource === 'global' ? 'gameid' : 'appid', appId!);
+    if (resource === 'stats' || resource === 'achievements') url.searchParams.set('steamid', steamId);
+    if (resource === 'schema' || resource === 'achievements') url.searchParams.set('l', 'english');
+  }
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
   try {
     // Never log this URL or raw fetch exceptions: both may contain credentials.
     const response = await upstream(url.toString(), { signal: controller.signal, redirect: 'manual' });
-    if (response.status === 401 || response.status === 403) throw new ApiError('steam_auth_error', 502);
     if (response.status === 429) throw new ApiError('rate_limited', 429);
-    if (!response.ok) throw new ApiError('steam_unavailable', 502);
+    const playerCapability = resource === 'stats' || resource === 'achievements';
+    if (!response.ok && !(playerCapability && [400, 403].includes(response.status))) {
+      throw new ApiError([401, 403].includes(response.status) ? 'steam_auth_error' : 'steam_unavailable', 502);
+    }
     let body: unknown;
     try { body = await response.json(); }
     catch { throw new ApiError(controller.signal.aborted ? 'steam_timeout' : 'invalid_steam_response', controller.signal.aborted ? 504 : 502); }
-    return resource === 'profile' ? parseProfile(body, steamId) : parseGames(body, resource);
+    if (playerCapability) {
+      const failure = explicitFailure(body);
+      if (failure) return failure;
+      // Observed on valid requests for games without exposed stats. The empty
+      // 400 response does not establish privacy or unsupported capability.
+      if (response.status === 400 && body && typeof body === 'object' && !Array.isArray(body) && Object.keys(body).length === 0) {
+        return { status: 'unavailable', reason: 'not_exposed' };
+      }
+    }
+    if (!response.ok) throw new ApiError(response.status === 403 ? 'steam_auth_error' : 'steam_unavailable', 502);
+    if (resource === 'profile') return parseProfile(body, steamId);
+    if (resource === 'stats') return parseStats(body, steamId);
+    if (resource === 'achievements') return parseAchievements(body, steamId);
+    if (resource === 'schema') return parseSchema(body);
+    if (resource === 'global') return parseGlobal(body);
+    return parseGames(body, resource);
   } catch (error) {
     if (error instanceof ApiError) throw error;
     throw new ApiError(controller.signal.aborted ? 'steam_timeout' : 'steam_unavailable', controller.signal.aborted ? 504 : 502);

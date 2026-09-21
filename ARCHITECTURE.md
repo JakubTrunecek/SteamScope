@@ -23,13 +23,19 @@ Responses use a discriminated `status` (`available` / `unavailable`). Missing ga
 
 ## Request protection and cache
 
+Game Detail routes: `GET /api/players/:steamId/games/:appId/{achievements,stats,schema,global}`. All validate both SteamID64 and canonical uint32 app IDs. Each route makes at most one fixed Steam request; each upstream request consumes a rate-limit token. Player results are cached by resource, player and app. Schema/global results are public game metadata and share app-scoped cache entries across players. Global percentages do not send the Steam key upstream.
+
+All four results load independently. Schema arrays absent from the response remain null, not fabricated empty definitions. Player list absence becomes `not_exposed`; an explicit empty list stays available and empty. Known Steam failure strings establish `private` or `unsupported`. Unknown failures remain errors. An observed empty HTTP 400 object on a valid per-game request becomes `not_exposed`, never proof of unsupported capability. HTTP 5xx remains an error even if its body resembles a capability failure.
+
 CORS uses one explicit frontend origin; it is not authentication. Cloudflare REQUEST_LIMITER allows 30 requests/minute per connecting IP, including cache hits. STEAM_LIMITER allows 60 upstream calls/minute per location across all clients. Anonymous access has no stable user identity; shared-IP users share the request allowance. Missing bindings fail closed. These are approximate per-location limits, not a global quota. Confirm namespace IDs are unique before deployment and evaluate global quota protection before wider public traffic.
 
 An isolate-local in-memory cache stores normalized successful available responses for 60 seconds, at most 100 entries. At most 20 distinct upstream requests may be pending; identical requests share a promise. Errors and ambiguous/private results are not cached. This cache is ephemeral (no DB, persisted history or tracking). Privacy changes may take up to the TTL to be reflected. Browser responses use `Cache-Control: no-store`. Worker observability is disabled and application code does not log upstream requests or credentials.
 
 ## Data model
 
-Detailed stat: internal `name`, numeric `value`, optional schema-provided `displayName`. No semantic guessing or game-specific property names. Preserve zero as a legitimate value.
+Detailed stat: internal `name`, finite numeric `value`, optional schema-provided `displayName` joined by exact name in the frontend. No semantic guessing or game-specific property names. Preserve zero, negative and fractional values; never substitute schema default values. Values retain their returned numeric precision in the UI and are not assigned inferred units.
+
+Achievements preserve the API name, unlocked boolean and nullable unlock timestamp. Zero/missing unlock time means unknown, not the Unix epoch. Descriptions for hidden locked achievements are withheld in the UI. Global rates join by exact API name; missing matches stay unknown and zero percent remains zero. The per-game progress denominator is the returned player achievement list, not the schema or owned library.
 
 Achievements and stats have independent per-game capability states. A failed request is not proof of unsupported capability. Private data is not an empty library. Aggregate achievement completion across all owned games is not an MVP metric.
 
@@ -40,3 +46,4 @@ Achievements and stats have independent per-game capability states. A failed req
 - [Steam IPlayerService](https://partner.steamgames.com/doc/webapi/IPlayerService)
 - [Steam ISteamUser](https://partner.steamgames.com/doc/webapi/ISteamUser)
 - [Cloudflare rate limiting](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/)
+- [Steam ISteamUserStats](https://partner.steamgames.com/doc/webapi/ISteamUserStats)

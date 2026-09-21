@@ -3,7 +3,9 @@ Steam profile, library and game statistics explorer
 
 ## Status
 
-0.0.3 First Live Data. Profile Overview, Library and recently played games use the Steam API through the Worker. Game Detail shows name and playtime; achievements and generic Detailed Stats follow in 0.0.4. Not deployed publicly yet.
+0.0.4 Game Detail. Profile, library, recently played games, achievements and generic Detailed Stats use live Steam data through the Worker. Not deployed publicly yet.
+
+Game Detail shows unlocked/locked achievements, unlock dates when supplied, schema descriptions and global unlock percentages. Progress belongs only to the selected game's returned achievements. Detailed Stats preserve exact internal names and numeric values; labels are added only on an exact schema-name match. Search, filters and progressive list expansion keep long lists usable. Failures in labels or global percentages do not hide player data.
 
 ## Local development
 
