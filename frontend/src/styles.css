@@ -58,3 +58,5 @@ progress { width: 100%; height: 12px; accent-color: #78dbc9; }
 .load-more { margin-top: 16px; }
 @media (max-width: 600px) { .achievement-list li { flex-direction: column; gap: 8px; } .achievement-status { text-align: left; } }
 @media (max-width: 600px) { .input-row, footer { flex-direction: column; align-items: stretch; } main { padding-top: 36px; } }
+@media (max-width: 600px) { .library-tools { flex-direction: column; gap: 16px; } .library-tools select { width: 100%; } }
+@media (max-width: 600px) { .stats-table { table-layout: fixed; } .stats-table th:first-child { width: 70%; } .stats-table th, .stats-table td { overflow-wrap: anywhere; } }

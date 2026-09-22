@@ -39,10 +39,10 @@ This milestone establishes a runnable shell, not live Steam integration or produ
 - [x] Frontend interaction tests for navigation, focus, search/sort, errors/retry, stale requests and independent game capabilities.
 - [x] Route titles, focus management, game-section shortcuts and small-playtime display.
 - [x] Pinned GitHub Actions CI and guarded manual Pages deployment workflow.
-- [ ] Responsive browser review.
-- [ ] Verify CI on GitHub.
-- [ ] Review production rate-limit namespaces and quota protection.
-- [ ] Configure GitHub Pages and Cloudflare production secrets; deploy and smoke-test both environments.
+- [x] Responsive browser review (390px); stack filters and wrap stats to keep values visible.
+- [x] Verify CI on GitHub.
+- [x] Review production rate-limit namespaces and quota protection (only one deployed Worker; limits are per location).
+- [x] Configure GitHub Pages and Cloudflare production secrets; deploy and smoke-test both environments.
 
 ## MVP completion
 

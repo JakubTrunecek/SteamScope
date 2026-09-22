@@ -7,6 +7,8 @@ Steam profile, library and game statistics explorer
 
 Game Detail shows unlocked/locked achievements, unlock dates when supplied, schema descriptions and global unlock percentages. Progress belongs only to the selected game's returned achievements. Detailed Stats preserve exact internal names and numeric values; labels are added only on an exact schema-name match. Search, filters and progressive list expansion keep long lists usable. Failures in labels or global percentages do not hide player data.
 
+Live app: [SteamScope](https://jakubtrunecek.github.io/SteamScope/).
+
 ## Local development
 
 Requires Node.js 22.12+ and pnpm 11.19.0.
@@ -46,7 +48,7 @@ pnpm worker:dry-run
 
 See [deployment guide](docs/DEPLOYMENT.md) for GitHub Actions verification, production authentication, secrets, Pages publication and smoke checks.
 
-Frontend output: `frontend/dist`. GitHub Pages must serve it at `/SteamScope/`. Set public `VITE_API_BASE_URL` to the deployed Worker origin at build time. No deployment has been performed by this milestone.
+Frontend output: `frontend/dist`. GitHub Pages must serve it at `/SteamScope/`. Set public `VITE_API_BASE_URL` to the deployed Worker origin at build time. Production URLs and verification results are recorded in docs/PROJECT_CONTEXT.md.
 
 For the production Worker, run from `worker/`:
 

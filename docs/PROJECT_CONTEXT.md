@@ -8,7 +8,7 @@ Steam profile, library and game statistics explorer.
 - 0.0.2 Project Skeleton: complete locally; not deployed. Four frontend routes, health-only Worker, workspace lockfile and verification scripts are ready.
 - 0.0.3 First Live Data: implemented and verified locally. Profile, library, recently played, library search/sort and basic game information use real Steam data. Skeleton commits were pushed to GitHub.
 - 0.0.4 Game Detail capabilities: implemented and verified locally, including achievements, global rates, schema labels and generic Detailed Stats.
-- 0.0.5 MVP hardening: frontend interaction tests, route focus/title improvements and GitHub Actions workflows implemented. Production deployment is in progress and is not yet verified.
+- 0.0.5 MVP hardening: frontend interaction tests, route focus/title improvements and GitHub Actions workflows implemented. Cloudflare Worker and GitHub Pages are deployed; production smoke checks passed on 2026-09-22.
 - Source: owner handoff on 2026-09-21; original raw audit responses are not in this repository.
 
 ## Locked MVP
@@ -35,4 +35,15 @@ TypeScript checks, five Worker boundary tests and the frontend production build 
 
 0.0.4 live checks matched all five audited stat counts. Left 4 Dead 2 returned 317 stats and 101 achievements (26 unlocked). Browser checks covered exact-name labels, the unlocked filter (26 matches), empty stat search and expansion from 50 to 100 stat rows. Max Payne demonstrated distinct unsupported achievements and ambiguous unavailable stats. Test fixtures cover privacy, malformed data, cache isolation and independent failures.
 
-0.0.5 adds eight frontend interaction tests (67 tests total). Test suites use synthetic data and do not require secrets. Cloudflare device authentication succeeded, but initial deployment lacked script/route OAuth scopes; do not assume production is live. See DEPLOYMENT.md for the deployment procedure.
+0.0.5 adds eight frontend interaction tests (67 tests total). Test suites use synthetic data and do not require secrets. Both GitHub CI and manual Pages publication passed. See DEPLOYMENT.md for the deployment procedure.
+
+## Production verification (2026-09-22)
+
+- Frontend: https://jakubtrunecek.github.io/SteamScope/
+- API: https://steamscope-api-production.steamscope-worker.workers.dev
+- Repository is public with owner approval. Pages publishes the built frontend through GitHub Actions.
+- Steam API key is stored as a Cloudflare Worker secret. A scan found no local key in tracked/publishable source or build artifacts.
+- Production returned 252 owned games; L4D2 returned 317 stats and 101 achievements, 26 unlocked. Profile, library search, game navigation and direct game URL refresh passed in the browser.
+- Health and approved-origin CORS passed; invalid SteamID returned 400 and an unapproved Origin returned 403.
+- Cloudflare dashboard lists one application, steamscope-api-production; no other deployed Worker shares the configured rate-limit namespaces. Limits remain per location and are not a global quota guarantee.
+- Responsive review at 390px found narrow library search and horizontal stat-table scrolling; mobile controls now stack and stat names wrap to keep values visible.
