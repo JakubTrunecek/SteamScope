@@ -53,3 +53,9 @@ TypeScript checks, five Worker boundary tests and the frontend production build 
 Added top-five playtime charts, concentration of recorded playtime, explicit playtime groups and library filters, recent-time distribution, and per-game achievement highlights. Unknown time and missing global rates are excluded from calculations, not interpreted as zero. Latest unlocks require positive supplied timestamps; rarity is not a difficulty score. All calculations reuse existing responses without additional Steam calls.
 
 72 automated tests pass (59 Worker, 13 frontend). Local live review found 102 zero-time games, 58 games with 1–119 minutes and 92 with at least 120 minutes; top five represented 37% of recorded time. Values are snapshots, not historical tracking.
+
+## 0.0.7 — Game detail exploration
+
+Game Detail now shows the game rank and share of known library playtime. Equal times share a rank; zero-time games are not ranked and unknown time is excluded. Achievement lists support rarity, latest dated unlock and name sorting, with unknown metadata last. Detailed Stats can hide zero values; negative and fractional values remain intact. All features reuse existing responses.
+
+75 tests pass (59 Worker and 16 frontend). Local live L4D2 checks: rank 18, 1.4% playtime share, 315 of 317 stats after hiding zero values; rare-unlocked sorting begins with Valve Gift Grab 2011 at 6.9%.

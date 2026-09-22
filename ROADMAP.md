@@ -53,6 +53,13 @@ This milestone establishes a runnable shell, not live Steam integration or produ
 - [x] Per-game rare unlocked, latest dated unlocks and rare locked achievement highlights.
 - [x] Boundary and missing-data tests; no new API requests, persistence or guessed stat meanings.
 
+## 0.0.7 — Game detail exploration
+
+- [x] Game playtime rank (shared ranks for ties) and share of known library time.
+- [x] Achievement sorting by rarity, dated unlocks and names, combined with existing filters.
+- [x] Optional zero-stat filter with visible zero/nonzero counts; exact values preserved.
+- [x] Missing-data, tie and interaction tests; 75 tests pass.
+
 ## MVP completion
 
 Complete all four screens, loading/empty/error states and accessibility review. Validate with the audited account and other visibility/capability cases. Deploy frontend to GitHub Pages and proxy to Cloudflare Workers.

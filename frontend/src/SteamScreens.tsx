@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Game, GamesResult, ProfileResult } from '../../shared/api';
 import { useApi } from './api';
+import { gamePosition } from './gameInsights';
 import { LibraryInsights, TimeChart, time } from './Insights';
 
 function ErrorState({ message, retry }: { message: string; retry: () => void }) {
@@ -79,11 +80,12 @@ export function Library({ id }: { id: string }) {
 export function GameSummary({ id, appId }: { id: string; appId: number }) {
   const { state, retry } = useApi<GamesResult>(`/api/players/${id}/library`);
   const game = state.status === 'ready' && state.data.status === 'available' ? state.data.games.find(item => item.appId === appId) : undefined;
+  const position = state.status === 'ready' && state.data.status === 'available' ? gamePosition(state.data.games, appId) : null;
   return <section className="card">
     {state.status === 'loading' ? <p role="status">Loading game information…</p>
       : state.status === 'error' ? <ErrorState message={state.message} retry={retry} />
       : state.data.status === 'unavailable' ? unavailable
       : !game ? <><h2>App {appId}</h2><p>This game was not returned in this player's visible library.</p></>
-      : <><h2>{game.name}</h2><p>{hours(game.playtimeMinutes)} total playtime</p><a href={`https://store.steampowered.com/app/${appId}/`} target="_blank" rel="noreferrer">View on Steam ↗</a></>}
+      : <><h2>{game.name}</h2><div className="game-metrics"><p><strong>{hours(game.playtimeMinutes)}</strong><span>Total playtime</span></p><p><strong>{position?.rank ? `#${position.rank}` : '—'}</strong><span>By time in your returned library</span></p><p><strong>{position?.share !== null && position?.share !== undefined ? `${position.share.toLocaleString(undefined, { maximumFractionDigits: 1 })}%` : '—'}</strong><span>Of known recorded library time</span></p></div><p className="muted">Equal playtimes share a rank. Games with missing time are excluded; games with zero time are not ranked. {position?.unknown ?? 0} games have unknown time.</p><a href={`https://store.steampowered.com/app/${appId}/`} target="_blank" rel="noreferrer">View on Steam ↗</a></>}
   </section>;
 }

@@ -100,6 +100,11 @@ describe('Game detail interactions', () => {
     expect(screen.queryByText(/1970/)).not.toBeInTheDocument();
     await user.selectOptions(screen.getByLabelText('Show achievements'), 'unlocked');
     expect(screen.queryByText('Secret achievement')).not.toBeInTheDocument();
+    await user.click(screen.getByLabelText('Hide zero values'));
+    expect(screen.queryByText('Raw_Name')).not.toBeInTheDocument();
+    expect(screen.getByText('-1.25')).toBeVisible();
+    await user.click(screen.getByLabelText('Hide zero values'));
+    expect(screen.getByText('Raw_Name')).toBeVisible();
     await user.type(screen.getByLabelText('Find a statistic'), 'missing');
     expect(screen.getByText('No statistics match your search.')).toBeVisible();
     await user.click(screen.getByRole('button', { name: 'Detailed Stats' }));

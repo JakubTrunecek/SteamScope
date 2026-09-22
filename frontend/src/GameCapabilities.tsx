@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { AchievementsResult, Capability, GameSchema, GlobalResult, SchemaResult, StatsResult } from '../../shared/api';
 import { useApi } from './api';
 import { AchievementHighlights } from './AchievementHighlights';
+import { sortAchievements } from './gameInsights';
 
 function Unavailable({ reason }: { reason: Extract<Capability<unknown>, { status: 'unavailable' }>['reason'] }) {
   return <p>{reason === 'private' ? 'Steam reports that this profile is not public.'
@@ -16,9 +17,10 @@ function Stats({ id, appId, schema }: { id: string; appId: string; schema: GameS
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState('name');
   const [shown, setShown] = useState(50);
+  const [hideZero, setHideZero] = useState(false);
   const labels = new Map(schema?.stats?.map(stat => [stat.name, stat.displayName]));
   const result = state.status === 'ready' && state.data.status === 'available' ? state.data.data : null;
-  const filtered = result?.filter(stat => `${stat.name} ${labels.get(stat.name) ?? ''}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()))
+  const filtered = result?.filter(stat => (!hideZero || stat.value !== 0) && `${stat.name} ${labels.get(stat.name) ?? ''}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()))
     .sort((a, b) => sort === 'value' ? b.value - a.value || a.name.localeCompare(b.name) : a.name.localeCompare(b.name)) ?? [];
   return <section className="card section" aria-labelledby="stats-title"><h2 id="stats-title" tabIndex={-1}>Detailed Stats</h2>
     <p className="muted">Values reported by this game. Original stat names are preserved; labels appear only when Steam supplies them. Values may use different units.</p>
@@ -28,7 +30,7 @@ function Stats({ id, appId, schema }: { id: string; appId: string; schema: GameS
       : result?.length === 0 ? <p>Steam returned an empty statistics list for this player and game.</p>
       : <><div className="library-tools"><div><label htmlFor="stat-search">Find a statistic</label><input id="stat-search" value={query} onChange={event => { setQuery(event.target.value); setShown(50); }} placeholder="Search original names or supplied labels" /></div>
         <div><label htmlFor="stat-sort">Sort statistics</label><select id="stat-sort" value={sort} onChange={event => { setSort(event.target.value); setShown(50); }}><option value="name">Original name A–Z</option><option value="value">Value: high to low</option></select></div></div>
-        <p className="muted" role="status">{filtered.length} of {result?.length} statistics · showing {Math.min(shown, filtered.length)}</p>
+        <label className="checkbox-label"><input type="checkbox" checked={hideZero} onChange={event => { setHideZero(event.target.checked); setShown(50); }} /> Hide zero values</label><p className="muted">{result?.filter(stat => stat.value !== 0).length} nonzero values · {result?.filter(stat => stat.value === 0).length} zero values. Nonzero does not imply progress or importance.</p><p className="muted" role="status">{filtered.length} of {result?.length} statistics · showing {Math.min(shown, filtered.length)}</p>
         {filtered.length === 0 ? <p>No statistics match your search.</p> : <div className="table-wrap"><table className="stats-table"><thead><tr><th scope="col">Statistic</th><th scope="col">Value</th></tr></thead><tbody>
           {filtered.slice(0, shown).map(stat => <tr key={stat.name}><th scope="row">{labels.get(stat.name) && <span className="stat-label">{labels.get(stat.name)}</span>}<code>{stat.name}</code></th><td>{String(stat.value)}</td></tr>)}
         </tbody></table></div>}
@@ -41,12 +43,13 @@ function Achievements({ id, appId, schema }: { id: string; appId: string; schema
   const global = useApi<GlobalResult>(`/api/players/${id}/games/${appId}/global`);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('all');
+  const [order, setOrder] = useState('steam');
   const [shown, setShown] = useState(30);
   const metadata = new Map(schema?.achievements?.map(item => [item.name, item]));
   const percentages = new Map(global.state.status === 'ready' && global.state.data.status === 'available' ? global.state.data.data.map(item => [item.name, item.percent]) : []);
   const result = state.status === 'ready' && state.data.status === 'available' ? state.data.data : null;
   const unlocked = result?.filter(item => item.achieved).length ?? 0;
-  const filtered = result?.filter(item => (filter === 'all' || item.achieved === (filter === 'unlocked')) && `${item.name} ${metadata.get(item.name)?.displayName ?? ''}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase())) ?? [];
+  const filtered = sortAchievements(result?.filter(item => (filter === 'all' || item.achieved === (filter === 'unlocked')) && `${item.name} ${metadata.get(item.name)?.displayName ?? ''}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase())) ?? [], order, percentages, metadata);
   return <section className="card section" aria-labelledby="achievements-title"><h2 id="achievements-title" tabIndex={-1}>Achievements</h2>
     {state.status === 'loading' ? <p role="status">Loading achievements…</p>
       : state.status === 'error' ? <Failure message={state.message} retry={retry} />
@@ -55,7 +58,7 @@ function Achievements({ id, appId, schema }: { id: string; appId: string; schema
       : <><p><strong>{unlocked} / {result?.length}</strong> returned achievements unlocked in this game</p>
         <progress aria-label="Unlocked achievements in this game" value={unlocked} max={result?.length || 1} />
         <AchievementHighlights items={result ?? []} rates={percentages} metadata={metadata} /><div className="library-tools section"><div><label htmlFor="achievement-search">Find an achievement</label><input id="achievement-search" value={query} onChange={event => { setQuery(event.target.value); setShown(30); }} placeholder="Search names" /></div>
-          <div><label htmlFor="achievement-filter">Show achievements</label><select id="achievement-filter" value={filter} onChange={event => { setFilter(event.target.value); setShown(30); }}><option value="all">All</option><option value="unlocked">Unlocked</option><option value="locked">Locked</option></select></div></div>
+          <div><label htmlFor="achievement-filter">Show achievements</label><select id="achievement-filter" value={filter} onChange={event => { setFilter(event.target.value); setShown(30); }}><option value="all">All</option><option value="unlocked">Unlocked</option><option value="locked">Locked</option></select></div><div><label htmlFor="achievement-order">Sort achievements</label><select id="achievement-order" value={order} onChange={event => { setOrder(event.target.value); setShown(30); }}><option value="steam">Steam order</option><option value="rare">Rarest first</option><option value="recent">Latest unlocks first</option><option value="name">Name A–Z</option></select></div></div>{order === 'rare' && <p className="muted">Lowest available global rates first; unknown rates last. Rarity is not difficulty.</p>}{order === 'recent' && <p className="muted">Dated unlocks first; locked and undated achievements last.</p>}
         <p className="muted" role="status">{filtered.length} matches · showing {Math.min(shown, filtered.length)}</p>
         {filtered.length === 0 ? <p>No achievements match your filters.</p> : <ul className="achievement-list">{filtered.slice(0, shown).map(item => {
           const info = metadata.get(item.name);
