@@ -44,9 +44,16 @@ describe('Navigation and library interactions', () => {
   it('filters, sorts, links to games and preserves small nonzero playtime', async () => {
     mockApi(); const user = userEvent.setup(); render(<Library id={id} />);
     expect(await screen.findByText('3 of 3 games')).toBeVisible();
-    const links = () => screen.getAllByRole('link').map(link => link.textContent);
+    const links = () => screen.queryAllByRole('link').map(link => link.textContent);
     expect(links()).toEqual(['Beta', 'Gamma', 'Alpha']);
     expect(screen.getByText('1 min')).toBeVisible();
+    await user.selectOptions(screen.getByLabelText('Playtime group'), 'sampled');
+    expect(links()).toEqual(['Gamma']);
+    await user.selectOptions(screen.getByLabelText('Playtime group'), 'zero');
+    expect(links()).toEqual(['Alpha']);
+    await user.selectOptions(screen.getByLabelText('Playtime group'), 'unknown');
+    expect(links()).toEqual([]);
+    await user.selectOptions(screen.getByLabelText('Playtime group'), 'all');
     await user.selectOptions(screen.getByLabelText('Sort by'), 'name');
     expect(links()).toEqual(['Alpha', 'Beta', 'Gamma']);
     await user.type(screen.getByLabelText('Find a game'), 'BETA');

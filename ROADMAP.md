@@ -44,6 +44,15 @@ This milestone establishes a runnable shell, not live Steam integration or produ
 - [x] Review production rate-limit namespaces and quota protection (only one deployed Worker; limits are per location).
 - [x] Configure GitHub Pages and Cloudflare production secrets; deploy and smoke-test both environments.
 
+## 0.0.6 — Player and library insights
+
+- [x] Most-played games chart and top-five share of known recorded time.
+- [x] Library groups: zero time, 1–119 minutes, 120+ minutes, and unknown time.
+- [x] Library playtime-group filter combined with search and sorting.
+- [x] Recent-time total and chart based on the returned last-two-week data.
+- [x] Per-game rare unlocked, latest dated unlocks and rare locked achievement highlights.
+- [x] Boundary and missing-data tests; no new API requests, persistence or guessed stat meanings.
+
 ## MVP completion
 
 Complete all four screens, loading/empty/error states and accessibility review. Validate with the audited account and other visibility/capability cases. Deploy frontend to GitHub Pages and proxy to Cloudflare Workers.

@@ -3,11 +3,13 @@ Steam profile, library and game statistics explorer
 
 ## Status
 
-0.0.5 MVP hardening. Profile, library, recently played games, achievements and generic Detailed Stats use live Steam data through the Worker. Automated frontend and Worker checks plus GitHub Pages deployment workflow are available. Production status is tracked in docs/PROJECT_CONTEXT.md.
+0.0.6 Player insights. Profile, library, recently played games, achievements and generic Detailed Stats use live Steam data through the Worker. Automated frontend and Worker checks plus GitHub Pages deployment workflow are available. Production status is tracked in docs/PROJECT_CONTEXT.md.
 
 Game Detail shows unlocked/locked achievements, unlock dates when supplied, schema descriptions and global unlock percentages. Progress belongs only to the selected game's returned achievements. Detailed Stats preserve exact internal names and numeric values; labels are added only on an exact schema-name match. Search, filters and progressive list expansion keep long lists usable. Failures in labels or global percentages do not hide player data.
 
 Live app: [SteamScope](https://jakubtrunecek.github.io/SteamScope/).
+
+The profile now shows top games, their share of recorded playtime, explicit library playtime groups and recent activity charts. Library filters use the same visible boundaries. Game Detail highlights rare unlocked achievements, latest dated unlocks and rare locked achievements using available per-game data.
 
 ## Local development
 

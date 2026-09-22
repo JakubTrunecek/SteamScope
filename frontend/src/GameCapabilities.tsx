@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { AchievementsResult, Capability, GameSchema, GlobalResult, SchemaResult, StatsResult } from '../../shared/api';
 import { useApi } from './api';
+import { AchievementHighlights } from './AchievementHighlights';
 
 function Unavailable({ reason }: { reason: Extract<Capability<unknown>, { status: 'unavailable' }>['reason'] }) {
   return <p>{reason === 'private' ? 'Steam reports that this profile is not public.'
@@ -53,7 +54,7 @@ function Achievements({ id, appId, schema }: { id: string; appId: string; schema
       : result?.length === 0 ? <p>Steam returned an empty achievements list for this player and game.</p>
       : <><p><strong>{unlocked} / {result?.length}</strong> returned achievements unlocked in this game</p>
         <progress aria-label="Unlocked achievements in this game" value={unlocked} max={result?.length || 1} />
-        <div className="library-tools section"><div><label htmlFor="achievement-search">Find an achievement</label><input id="achievement-search" value={query} onChange={event => { setQuery(event.target.value); setShown(30); }} placeholder="Search names" /></div>
+        <AchievementHighlights items={result ?? []} rates={percentages} metadata={metadata} /><div className="library-tools section"><div><label htmlFor="achievement-search">Find an achievement</label><input id="achievement-search" value={query} onChange={event => { setQuery(event.target.value); setShown(30); }} placeholder="Search names" /></div>
           <div><label htmlFor="achievement-filter">Show achievements</label><select id="achievement-filter" value={filter} onChange={event => { setFilter(event.target.value); setShown(30); }}><option value="all">All</option><option value="unlocked">Unlocked</option><option value="locked">Locked</option></select></div></div>
         <p className="muted" role="status">{filtered.length} matches · showing {Math.min(shown, filtered.length)}</p>
         {filtered.length === 0 ? <p>No achievements match your filters.</p> : <ul className="achievement-list">{filtered.slice(0, shown).map(item => {

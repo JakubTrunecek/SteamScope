@@ -47,3 +47,9 @@ TypeScript checks, five Worker boundary tests and the frontend production build 
 - Health and approved-origin CORS passed; invalid SteamID returned 400 and an unapproved Origin returned 403.
 - Cloudflare dashboard lists one application, steamscope-api-production; no other deployed Worker shares the configured rate-limit namespaces. Limits remain per location and are not a global quota guarantee.
 - Responsive review at 390px found narrow library search and horizontal stat-table scrolling; mobile controls now stack and stat names wrap to keep values visible.
+
+## 0.0.6 — Player insights (2026-09-22)
+
+Added top-five playtime charts, concentration of recorded playtime, explicit playtime groups and library filters, recent-time distribution, and per-game achievement highlights. Unknown time and missing global rates are excluded from calculations, not interpreted as zero. Latest unlocks require positive supplied timestamps; rarity is not a difficulty score. All calculations reuse existing responses without additional Steam calls.
+
+72 automated tests pass (59 Worker, 13 frontend). Local live review found 102 zero-time games, 58 games with 1–119 minutes and 92 with at least 120 minutes; top five represented 37% of recorded time. Values are snapshots, not historical tracking.
