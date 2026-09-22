@@ -9,7 +9,7 @@ export function achievementHighlights(items: Achievement[], rates: Map<string, n
   };
 }
 
-export function AchievementHighlights({ items, rates, metadata }: { items: Achievement[]; rates: Map<string, number>; metadata: Map<string, SchemaAchievement> }) {
+export function AchievementHighlights({ items, rates, metadata, onSelect }: { onSelect: (name: string) => void; items: Achievement[]; rates: Map<string, number>; metadata: Map<string, SchemaAchievement> }) {
   const highlights = achievementHighlights(items, rates);
   return <section aria-label="Achievement highlights" className="section">
     <h3>Standout achievements</h3>
@@ -20,7 +20,7 @@ export function AchievementHighlights({ items, rates, metadata }: { items: Achie
       ['Rare and still locked', highlights.locked, 'No locked achievements with a global rate available.'],
     ] as const).map(([title, list, empty]) => <article key={title} className="highlight-card"><h4>{title}</h4>
       {list.length === 0 ? <p className="muted">{empty}</p> : <ol>{list.map(item => <li key={item.name}>
-        <strong>{metadata.get(item.name)?.displayName ?? item.name}</strong>
+        <button className="highlight-link" onClick={() => onSelect(item.name)}>{metadata.get(item.name)?.displayName ?? item.name}</button>
         <span>{title === 'Latest unlocks' ? new Date(item.unlockTime! * 1000).toLocaleDateString() : `${rates.get(item.name)!.toLocaleString(undefined, { maximumFractionDigits: 2 })}% global unlock rate`}</span>
       </li>)}</ol>}
     </article>)}</div>

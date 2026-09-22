@@ -91,3 +91,7 @@ summary { cursor: pointer; padding: 12px 0; color: #78dbc9; }
 .game-metrics span { display: block; color: #a9b9ce; }
 .checkbox-label { display: flex; align-items: center; gap: 10px; margin-top: 24px; }
 .checkbox-label input { flex: none; width: 20px; height: 20px; accent-color: #78dbc9; }
+.result-actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 16px 0; }
+.result-actions button + button { background: #25354a; color: #e5edf7; }
+button:disabled { opacity: .5; cursor: not-allowed; }
+.highlight-link { background: transparent; color: #89ead7; padding: 0; text-align: left; text-decoration: underline; text-underline-offset: 3px; overflow-wrap: anywhere; }

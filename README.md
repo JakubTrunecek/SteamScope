@@ -3,7 +3,7 @@ Steam profile, library and game statistics explorer
 
 ## Status
 
-0.0.7 Game detail exploration. Profile, library, recently played games, achievements and generic Detailed Stats use live Steam data through the Worker. Automated frontend and Worker checks plus GitHub Pages deployment workflow are available. Production status is tracked in docs/PROJECT_CONTEXT.md.
+0.0.8 Filtered exports and achievement drill-down. Profile, library, recently played games, achievements and generic Detailed Stats use live Steam data through the Worker. Automated frontend and Worker checks plus GitHub Pages deployment workflow are available. Production status is tracked in docs/PROJECT_CONTEXT.md.
 
 Game Detail shows unlocked/locked achievements, unlock dates when supplied, schema descriptions and global unlock percentages. Progress belongs only to the selected game's returned achievements. Detailed Stats preserve exact internal names and numeric values; labels are added only on an exact schema-name match. Search, filters and progressive list expansion keep long lists usable. Failures in labels or global percentages do not hide player data.
 
@@ -38,6 +38,8 @@ Routes:
 - `#/profile/76561198004260198/game/550` — Game Detail
 
 The ID in these examples is the audit account, not an automatically loaded default profile. Profile sections load independently. Library supports search, sorting and navigation to a game. Private/ambiguous, empty, loading and error states are separate.
+
+CSV export downloads every matching statistic or achievement in the current sort order, including rows not yet shown. Missing metadata stays blank, dates are UTC, and hidden locked descriptions are excluded. Formula-like text is escaped for spreadsheet import.
 
 ## Verification
 

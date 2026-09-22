@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { App } from '../src/App';
 import { Library } from '../src/SteamScreens';
+import * as exports from '../src/export';
 import { GameCapabilities } from '../src/GameCapabilities';
 
 const id = '76561198004260198';
@@ -127,4 +128,33 @@ describe('Game detail interactions', () => {
     await waitFor(() => expect(within(table).getAllByRole('row')).toHaveLength(76));
     expect(screen.queryByRole('button', { name: 'Show more statistics' })).not.toBeInTheDocument();
   });
+});
+
+it('combines rarity filters, opens exact highlights and resets the result list', async () => {
+  mockApi(); const user = userEvent.setup(); render(<GameCapabilities id={id} appId="550" />);
+  await screen.findByText('Raw_Name');
+  await user.selectOptions(screen.getByLabelText('Global unlock rate'), '1');
+  expect(screen.getByText('1 matches · showing 1')).toBeVisible();
+  await user.selectOptions(screen.getByLabelText('Global unlock rate'), 'unknown');
+  expect(screen.getByRole('heading', { name: 'Secret achievement' })).toBeVisible();
+  await user.click(screen.getByRole('button', { name: 'OPEN' }));
+  expect(screen.getByRole('heading', { name: 'Achievement results' })).toHaveFocus();
+  expect(screen.getByRole('heading', { name: 'OPEN' })).toBeVisible();
+  expect(screen.queryByRole('heading', { name: 'Secret achievement' })).not.toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: 'Reset achievement filters' }));
+  expect(screen.getByText('2 matches · showing 2')).toBeVisible();
+});
+
+it('exports every filtered stat, including rows beyond the initial visible page', async () => {
+  mockApi({ stats: () => json({ status: 'available', data: Array.from({ length: 75 }, (_, i) => ({ name: 'stat_' + i, value: i })) }) });
+  const save = vi.spyOn(exports, 'downloadCsv').mockImplementation(() => {});
+  const user = userEvent.setup(); render(<GameCapabilities id={id} appId="550" />);
+  await screen.findByRole('table');
+  await user.click(screen.getByLabelText('Hide zero values'));
+  await user.click(screen.getByRole('button', { name: 'Export 74 statistics to CSV' }));
+  expect(save).toHaveBeenCalledOnce();
+  expect(save.mock.calls[0][1]).toContain('"stat_74","","74"');
+  expect(save.mock.calls[0][1]).not.toContain('"stat_0"');
+  expect(save.mock.calls[0][1].trim().split('\r\n')).toHaveLength(75);
+  save.mockRestore();
 });

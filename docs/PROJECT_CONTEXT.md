@@ -59,3 +59,9 @@ Added top-five playtime charts, concentration of recorded playtime, explicit pla
 Game Detail now shows the game rank and share of known library playtime. Equal times share a rank; zero-time games are not ranked and unknown time is excluded. Achievement lists support rarity, latest dated unlock and name sorting, with unknown metadata last. Detailed Stats can hide zero values; negative and fractional values remain intact. All features reuse existing responses.
 
 75 tests pass (59 Worker and 16 frontend). Local live L4D2 checks: rank 18, 1.4% playtime share, 315 of 317 stats after hiding zero values; rare-unlocked sorting begins with Valve Gift Grab 2011 at 6.9%.
+
+## 0.0.8 — Filtered exports and achievement drill-down
+
+The owner prioritized statistics and achievements. Added exact-name drill-down from highlights, inclusive global rarity filters, reset controls and client-side CSV downloads of all matching rows (not only the visible page). Unknown rates are separate from 0%. CSV excludes hidden locked descriptions, keeps missing values blank and uses UTC dates. Spreadsheet formula-like text is prefixed with an apostrophe for safe import; numeric values retain their exact JavaScript representation. No data is uploaded by export and no new Steam calls are added.
+
+80 tests pass (59 Worker, 21 frontend), including quoting, numeric precision, hidden descriptions, filter combinations and exporting beyond the first page. Local live L4D2 review returned 8 locked achievements at <=1% global unlock rate; a downloaded one-achievement CSV was checked.

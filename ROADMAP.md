@@ -60,6 +60,17 @@ This milestone establishes a runnable shell, not live Steam integration or produ
 - [x] Optional zero-stat filter with visible zero/nonzero counts; exact values preserved.
 - [x] Missing-data, tie and interaction tests; 75 tests pass.
 
+## 0.0.8 — Filtered exports and achievement drill-down
+
+- [x] Open a specific achievement from a highlight, with keyboard focus on results.
+- [x] Global rarity filters: <=1%, <=5%, <=10%, unknown and any rate.
+- [x] Reset filters and export all matching stats/achievements in their current order.
+- [x] CSV keeps exact numeric values, UTC dates and blank missing metadata; hidden locked descriptions are excluded.
+- [x] CSV quoting and formula protection for untrusted labels; no extra API calls or persistence.
+- [x] 80 tests and a live CSV download verified.
+
+Profile URL input remains a future usability improvement; the owner prioritized statistics and achievements.
+
 ## MVP completion
 
 Complete all four screens, loading/empty/error states and accessibility review. Validate with the audited account and other visibility/capability cases. Deploy frontend to GitHub Pages and proxy to Cloudflare Workers.
