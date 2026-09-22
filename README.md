@@ -3,7 +3,7 @@ Steam profile, library and game statistics explorer
 
 ## Status
 
-0.0.4 Game Detail. Profile, library, recently played games, achievements and generic Detailed Stats use live Steam data through the Worker. Not deployed publicly yet.
+0.0.5 MVP hardening. Profile, library, recently played games, achievements and generic Detailed Stats use live Steam data through the Worker. Automated frontend and Worker checks plus GitHub Pages deployment workflow are available. Production status is tracked in docs/PROJECT_CONTEXT.md.
 
 Game Detail shows unlocked/locked achievements, unlock dates when supplied, schema descriptions and global unlock percentages. Progress belongs only to the selected game's returned achievements. Detailed Stats preserve exact internal names and numeric values; labels are added only on an exact schema-name match. Search, filters and progressive list expansion keep long lists usable. Failures in labels or global percentages do not hide player data.
 
@@ -43,6 +43,8 @@ pnpm worker:dry-run
 ```
 
 ## Deployment preparation
+
+See [deployment guide](docs/DEPLOYMENT.md) for GitHub Actions verification, production authentication, secrets, Pages publication and smoke checks.
 
 Frontend output: `frontend/dist`. GitHub Pages must serve it at `/SteamScope/`. Set public `VITE_API_BASE_URL` to the deployed Worker origin at build time. No deployment has been performed by this milestone.
 

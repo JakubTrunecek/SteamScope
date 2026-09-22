@@ -19,7 +19,7 @@ function Stats({ id, appId, schema }: { id: string; appId: string; schema: GameS
   const result = state.status === 'ready' && state.data.status === 'available' ? state.data.data : null;
   const filtered = result?.filter(stat => `${stat.name} ${labels.get(stat.name) ?? ''}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()))
     .sort((a, b) => sort === 'value' ? b.value - a.value || a.name.localeCompare(b.name) : a.name.localeCompare(b.name)) ?? [];
-  return <section className="card section" aria-labelledby="stats-title"><h2 id="stats-title">Detailed Stats</h2>
+  return <section className="card section" aria-labelledby="stats-title"><h2 id="stats-title" tabIndex={-1}>Detailed Stats</h2>
     <p className="muted">Values reported by this game. Original stat names are preserved; labels appear only when Steam supplies them. Values may use different units.</p>
     {state.status === 'loading' ? <p role="status">Loading statistics…</p>
       : state.status === 'error' ? <Failure message={state.message} retry={retry} />
@@ -46,7 +46,7 @@ function Achievements({ id, appId, schema }: { id: string; appId: string; schema
   const result = state.status === 'ready' && state.data.status === 'available' ? state.data.data : null;
   const unlocked = result?.filter(item => item.achieved).length ?? 0;
   const filtered = result?.filter(item => (filter === 'all' || item.achieved === (filter === 'unlocked')) && `${item.name} ${metadata.get(item.name)?.displayName ?? ''}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase())) ?? [];
-  return <section className="card section" aria-labelledby="achievements-title"><h2 id="achievements-title">Achievements</h2>
+  return <section className="card section" aria-labelledby="achievements-title"><h2 id="achievements-title" tabIndex={-1}>Achievements</h2>
     {state.status === 'loading' ? <p role="status">Loading achievements…</p>
       : state.status === 'error' ? <Failure message={state.message} retry={retry} />
       : state.data.status === 'unavailable' ? <Unavailable reason={state.data.reason} />
@@ -78,6 +78,7 @@ export function GameCapabilities({ id, appId }: { id: string; appId: string }) {
   const schema = useApi<SchemaResult>(`/api/players/${id}/games/${appId}/schema`);
   const metadata = schema.state.status === 'ready' && schema.state.data.status === 'available' ? schema.state.data.data : null;
   return <>
+    <nav className="section" aria-label="Game sections">{[['achievements-title', 'Achievements'], ['stats-title', 'Detailed Stats']].map(([target, label]) => <button key={target} onClick={() => { const heading = document.getElementById(target); heading?.focus(); heading?.scrollIntoView({ block: 'start' }); }}>{label}</button>)}</nav>
     <div className="section muted" role="status">{schema.state.status === 'loading' ? 'Loading game labels…'
       : schema.state.status === 'error' ? <><p>Game labels could not be loaded. Original names remain available.</p><button onClick={schema.retry}>Retry game labels</button></>
       : metadata ? 'Game labels supplied by Steam. Missing labels retain their original names.' : 'Steam did not expose game labels. Original names are shown.'}</div>

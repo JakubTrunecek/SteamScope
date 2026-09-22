@@ -34,11 +34,15 @@ This milestone establishes a runnable shell, not live Steam integration or produ
 - [x] Search stats and achievements, filter unlocked/locked, sort stats and expand long lists.
 - [x] Verify all five audited stat counts against live data and exercise unsupported/ambiguous responses.
 
-## Next — MVP hardening and deployment
+## 0.0.5 — MVP hardening and deployment
 
-- Responsive/accessibility review and automated frontend interaction checks.
-- CI verification, review production rate-limit namespaces and quota protection.
-- Configure GitHub Pages and Cloudflare production secrets; deploy and smoke-test both environments.
+- [x] Frontend interaction tests for navigation, focus, search/sort, errors/retry, stale requests and independent game capabilities.
+- [x] Route titles, focus management, game-section shortcuts and small-playtime display.
+- [x] Pinned GitHub Actions CI and guarded manual Pages deployment workflow.
+- [ ] Responsive browser review.
+- [ ] Verify CI on GitHub.
+- [ ] Review production rate-limit namespaces and quota protection.
+- [ ] Configure GitHub Pages and Cloudflare production secrets; deploy and smoke-test both environments.
 
 ## MVP completion
 

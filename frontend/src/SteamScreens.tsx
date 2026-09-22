@@ -5,7 +5,7 @@ import { useApi } from './api';
 function ErrorState({ message, retry }: { message: string; retry: () => void }) {
   return <div role="alert"><p>{message}</p><button onClick={retry}>Try again</button></div>;
 }
-const hours = (minutes: number | null) => minutes === null ? 'Not available' : `${(minutes / 60).toLocaleString(undefined, { maximumFractionDigits: 1 })} h`;
+const hours = (minutes: number | null) => minutes === null ? 'Not available' : minutes > 0 && minutes < 6 ? `${minutes} min` : `${(minutes / 60).toLocaleString(undefined, { maximumFractionDigits: 1 })} h`;
 const unavailable = <p>Steam did not expose this data. Game details may be private or otherwise unavailable.</p>;
 
 function GameList({ id, games, recent = false }: { id: string; games: Game[]; recent?: boolean }) {

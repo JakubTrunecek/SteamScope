@@ -23,6 +23,8 @@ input { min-width: 0; flex: 1; background: #0b1220; color: #fff; border: 1px sol
 button { border: 0; background: #78dbc9; color: #0b1220; cursor: pointer; font-weight: 700; }
 .muted, footer { color: #a9b9ce; font-size: 14px; }
 nav { display: flex; gap: 24px; margin-bottom: 32px; }
+nav { flex-wrap: wrap; }
+nav a[aria-current="page"] { color: #fff; font-weight: 700; }
 :focus-visible { outline: 3px solid #78dbc9; outline-offset: 4px; }
 .skip { position: absolute; top: -60px; padding: 12px; background: #131f30; }
 .skip:focus { top: 0; }

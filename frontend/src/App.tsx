@@ -6,6 +6,7 @@ import { Overview, Library, GameSummary } from './SteamScreens';
 function Health() {
   const [status, setStatus] = useState('Checking connection…');
   useEffect(() => {
+    let active = true;
     const base = import.meta.env.VITE_API_BASE_URL;
     if (!base) {
       setStatus('Backend is not configured.');
@@ -18,11 +19,11 @@ function Health() {
         if (!response.ok) throw new Error('Unavailable');
         const body = await response.json();
         if (body.status !== 'ok' || body.service !== 'steamscope-worker') throw new Error('Invalid response');
-        setStatus('Backend connected');
+        if (active) setStatus('Backend connected');
       })
-      .catch(() => setStatus('Backend unavailable. Please try again later.'))
+      .catch(() => { if (active) setStatus('Backend unavailable. Please try again later.'); })
       .finally(() => clearTimeout(timer));
-    return () => { clearTimeout(timer); controller.abort(); };
+    return () => { active = false; clearTimeout(timer); controller.abort(); };
   }, []);
   return <p className="status" role="status">{status}</p>;
 }
@@ -60,7 +61,7 @@ function Home() {
 }
 
 function ProfileNav({ id }: { id: string }) {
-  return <nav aria-label="Profile"><a href={`#/profile/${id}`}>Overview</a><a href={`#/profile/${id}/library`}>Library</a></nav>;
+  return <nav aria-label="Profile"><a href={`#/profile/${id}`} aria-current={location.hash === `#/profile/${id}` ? 'page' : undefined}>Overview</a><a href={`#/profile/${id}/library`} aria-current={location.hash === `#/profile/${id}/library` ? 'page' : undefined}>Library</a></nav>;
 }
 
 function Screen({ path }: { path: string }) {
@@ -80,13 +81,18 @@ function Screen({ path }: { path: string }) {
 export function App() {
   const [path, setPath] = useState(location.hash.slice(1) || '/');
   useEffect(() => {
+    const title = document.querySelector('main h1')?.textContent;
+    document.title = title ? `${title} · SteamScope` : 'SteamScope';
+    document.getElementById('main')?.focus();
+  }, [path]);
+  useEffect(() => {
     const update = () => setPath(location.hash.slice(1) || '/');
     addEventListener('hashchange', update);
     return () => removeEventListener('hashchange', update);
   }, []);
   return <>
     <a className="skip" href="#main" onClick={(event) => { event.preventDefault(); document.getElementById('main')?.focus(); }}>Skip to content</a>
-    <header><a className="brand" href="#/">Steam<span>Scope</span></a><span className="badge">0.0.4 · Preview</span></header>
+    <header><a className="brand" href="#/">Steam<span>Scope</span></a><span className="badge">0.0.5 · Preview</span></header>
     <main id="main" tabIndex={-1}><Screen key={path} path={path} /></main>
     <footer><span>SteamScope · Independent Steam explorer</span><Health /></footer>
   </>;
