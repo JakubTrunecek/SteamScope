@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { AchievementCollection } from './AchievementCollection';
 import type { Game, GamesResult, ProfileResult } from '../../shared/api';
 import { useApi } from './api';
 import { gamePosition } from './gameInsights';
@@ -41,7 +42,7 @@ function LibrarySummary({ id }: { id: string }) {
         <p><strong>{allTimeKnown ? hours(result.games.reduce((sum, game) => sum + (game.playtimeMinutes ?? 0), 0)) : 'Not available'}</strong> total playtime</p></div>
         <p className="muted">Includes played free games. Counts reflect what Steam makes visible now.</p></>}
     <a href={`#/profile/${id}/library`}>Explore library →</a>
-  </section></div>{result && <LibraryInsights games={result.games} id={id} />}</>;
+  </section></div>{result && <><LibraryInsights games={result.games} id={id} /><AchievementCollection key={id} games={result.games} id={id} /></>}</>;
 }
 
 function RecentGames({ id }: { id: string }) {

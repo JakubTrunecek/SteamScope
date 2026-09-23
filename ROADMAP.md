@@ -76,3 +76,11 @@ Profile URL input remains a future usability improvement; the owner prioritized 
 Complete all four screens, loading/empty/error states and accessibility review. Validate with the audited account and other visibility/capability cases. Deploy frontend to GitHub Pages and proxy to Cloudflare Workers.
 
 Excluded from MVP: DB, login, tracking, social and AI features.
+
+## 0.0.9 — Library achievement collection
+
+- [x] User-triggered batches of five games, paced requests, cancellation and retry of unfinished games.
+- [x] Explicit checked/support/unavailable/empty coverage, rarest and latest unlocks, completed and nearly completed games.
+- [x] UTC monthly unlock calendar; missing dates excluded, no playtime history inferred.
+- [x] Numeric statistic ranges, inclusive unlock date ranges and visible-description search.
+- [x] 84 automated tests pass; no persistence or new backend permissions.

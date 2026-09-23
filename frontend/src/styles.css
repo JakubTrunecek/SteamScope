@@ -95,3 +95,13 @@ summary { cursor: pointer; padding: 12px 0; color: #78dbc9; }
 .result-actions button + button { background: #25354a; color: #e5edf7; }
 button:disabled { opacity: .5; cursor: not-allowed; }
 .highlight-link { background: transparent; color: #89ead7; padding: 0; text-align: left; text-decoration: underline; text-underline-offset: 3px; overflow-wrap: anywhere; }
+.range-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; border: 1px solid #304258; border-radius: 10px; margin: 24px 0 12px; padding: 18px; }
+.range-filters legend { color: #89ead7; padding: 0 8px; }
+.range-filters input { width: 100%; }
+input[type="date"] { color-scheme: dark; }
+@media (max-width: 600px) { .range-filters { grid-template-columns: 1fr; } }
+
+.unlock-calendar { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: .4rem; margin-top: 1rem; }
+.calendar-day { display: flex; flex-direction: column; padding: .5rem; background: #172235; border-radius: .4rem; font-size: .8rem; }
+.calendar-day.active { background: #174b4a; }
+@media (max-width: 480px) { .unlock-calendar { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
