@@ -8,6 +8,7 @@ export function collectionInsights(rows: ScannedGame[]) {
   const days = new Map<string, number>();
   for (const item of dated) { const day = new Date(item.unlockTime! * 1000).toISOString().slice(0, 10); days.set(day, (days.get(day) ?? 0) + 1); }
   return {
+    dated,
     supported: supported.length, unlocked: unlocked.length, undated: unlocked.length - dated.length,
     rarest: unlocked.filter(item => item.percent !== undefined).sort((a, b) => a.percent - b.percent).slice(0, 5),
     latest: dated.sort((a, b) => b.unlockTime! - a.unlockTime!).slice(0, 5),

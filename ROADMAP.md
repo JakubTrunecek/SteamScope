@@ -84,3 +84,10 @@ Excluded from MVP: DB, login, tracking, social and AI features.
 - [x] UTC monthly unlock calendar; missing dates excluded, no playtime history inferred.
 - [x] Numeric statistic ranges, inclusive unlock date ranges and visible-description search.
 - [x] 84 automated tests pass; no persistence or new backend permissions.
+
+## 0.0.10 — Keep exploration context and open calendar days
+
+- [x] Keep completed scan results and calendar selection across route navigation in tab memory (at most three profiles).
+- [x] Clear results explicitly; full reload clears memory. No browser storage, DB or tracking.
+- [x] Select calendar days to see exact supplied unlock times, labels and game links, including honest empty-day states.
+- [x] Bound long daily lists and verify profile isolation, navigation restoration, stale library entries and calendar boundaries.

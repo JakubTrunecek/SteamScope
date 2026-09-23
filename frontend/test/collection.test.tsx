@@ -1,11 +1,50 @@
-import { act, render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { act, render, screen, within } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { collectionInsights } from '../src/collectionInsights';
 import { AchievementCollection } from '../src/AchievementCollection';
 import { achievementMatches, numberRange, unlockRange } from '../src/searchFilters';
+import { clearCollection, readCollection, saveCollection } from '../src/collectionSession';
 
 const game = { appId: 550, name: 'Game', playtimeMinutes: 20, recentMinutes: null };
+const id = '76561198004260198';
+beforeEach(() => { clearCollection(id); clearCollection('other'); });
 describe('Collection coverage and dates', () => {
+  it('keeps the selected day and results across navigation without fetching, isolates profiles and clears on request', () => {
+    const fetcher = vi.fn(); vi.stubGlobal('fetch', fetcher);
+    saveCollection(id, { rows: [{ game, labels: { B: 'Leap day unlock' }, percentages: {}, achievements: [
+      { name: 'B', achieved: true, unlockTime: 1709251199 },
+      { name: 'UNDATED', achieved: true, unlockTime: null },
+      { name: 'LOCKED', achieved: false, unlockTime: 1709251199 },
+    ] }], month: '', day: '' });
+    let view = render(<AchievementCollection id={id} games={[game]} />);
+    act(() => screen.getByRole('button', { name: '2024-02-29: 1 unlocks' }).click());
+    expect(screen.getByRole('button', { name: '2024-02-29: 1 unlocks' })).toHaveAttribute('aria-pressed', 'true');
+    const daily = () => within(screen.getByRole('region', { name: 'Selected day achievements' }));
+    expect(daily().getByRole('link', { name: 'Leap day unlock' })).toHaveAttribute('href', `#/profile/${id}/game/550`);
+    expect(daily().getByText('Game · 23:59:59 UTC')).toBeVisible();
+    expect(daily().queryByText('UNDATED')).not.toBeInTheDocument();
+    view.unmount();
+    view = render(<AchievementCollection id="other" games={[game]} />);
+    expect(screen.getByText(/0 of 1 games checked/)).toBeVisible(); view.unmount();
+    view = render(<AchievementCollection id={id} games={[game]} />);
+    expect(daily().getByRole('link', { name: 'Leap day unlock' })).toBeVisible();
+    expect(fetcher).not.toHaveBeenCalled();
+    act(() => screen.getByRole('button', { name: '2024-02-28: 0 unlocks' }).click());
+    expect(daily().getByText('No dated unlocks on this day in the loaded results.')).toBeVisible();
+    act(() => screen.getByRole('button', { name: 'Clear loaded results' }).click());
+    expect(screen.getByText(/0 of 1 games checked/)).toBeVisible();
+    expect(readCollection(id).rows).toEqual([]); view.unmount();
+  });
+  it('bounds tab memory to three profiles and drops games no longer in the returned library', () => {
+    const snapshot = { rows: [{ game, achievements: [], labels: {}, percentages: {} }], month: '', day: '' };
+    for (const profile of ['one', 'two', 'three', 'four']) saveCollection(profile, snapshot);
+    expect(readCollection('one').rows).toEqual([]);
+    expect(readCollection('four').rows).toHaveLength(1);
+    saveCollection(id, snapshot);
+    render(<AchievementCollection id={id} games={[{ ...game, appId: 999 }]} />);
+    expect(screen.getByText(/0 of 1 games checked/)).toBeVisible();
+    for (const profile of ['one', 'two', 'three', 'four']) clearCollection(profile);
+  });
   it('excludes unavailable and empty games from completion and keeps zero rarity', () => {
     const result = collectionInsights([
       { game, achievements: null, labels: {}, percentages: {} },
