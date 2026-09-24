@@ -1,5 +1,6 @@
 import { isAppId, isSteamId } from '../../shared/api';
 import { ApiError, fetchSteam, type Resource } from './steam';
+import { fetchCommunity } from './community';
 
 interface Limiter { limit(input: { key: string }): Promise<{ success: boolean }> }
 export interface Env {
@@ -28,7 +29,8 @@ export function createWorker(upstream: typeof fetch = fetch, now = Date.now) {
     const health = url.pathname === '/api/health';
     const match = /^\/api\/players\/([^/]+)\/(profile|library|recent)$/.exec(url.pathname);
     const gameMatch = /^\/api\/players\/([^/]+)\/games\/([^/]+)\/(stats|achievements|schema|global)$/.exec(url.pathname);
-    if (!health && !match && !gameMatch) return json({ error: 'not_found' }, 404);
+    const communityMatch = /^\/api\/games\/([^/]+)\/(players|reviews)$/.exec(url.pathname);
+    if (!health && !match && !gameMatch && !communityMatch) return json({ error: 'not_found' }, 404);
     if (url.search) return json({ error: 'unexpected_query' }, 400);
     if (request.method === 'OPTIONS') {
       headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -39,16 +41,16 @@ export function createWorker(upstream: typeof fetch = fetch, now = Date.now) {
       return json({ error: 'method_not_allowed' }, 405);
     }
     if (health) return json({ status: 'ok', service: 'steamscope-worker' });
-    const steamId = (match ?? gameMatch)![1];
-    const resource = (match ? match[2] : gameMatch![3]) as Resource;
-    const appId = gameMatch?.[2];
-    if (!isSteamId(steamId)) return json({ error: 'invalid_steam_id' }, 400);
+    const steamId = (match ?? gameMatch)?.[1] ?? '';
+    const resource = (communityMatch ? communityMatch[2] : match ? match[2] : gameMatch![3]) as Resource | 'players' | 'reviews';
+    const appId = communityMatch?.[1] ?? gameMatch?.[2];
+    if (!communityMatch && !isSteamId(steamId)) return json({ error: 'invalid_steam_id' }, 400);
     if (appId !== undefined && !isAppId(appId)) return json({ error: 'invalid_app_id' }, 400);
-    if (!env.STEAM_API_KEY?.trim() || !env.REQUEST_LIMITER || !env.STEAM_LIMITER) return json({ error: 'not_configured' }, 503);
+    if ((!communityMatch && !env.STEAM_API_KEY?.trim()) || !env.REQUEST_LIMITER || !env.STEAM_LIMITER) return json({ error: 'not_configured' }, 503);
     try {
       const client = request.headers.get('CF-Connecting-IP') ?? 'local';
       if (!(await env.REQUEST_LIMITER.limit({ key: client })).success) throw new ApiError('rate_limited', 429);
-      const cacheKey = resource === 'schema' || resource === 'global' ? `${resource}:${appId}` : `${resource}:${steamId}:${appId ?? ''}`;
+      const cacheKey = communityMatch || resource === 'schema' || resource === 'global' ? `${resource}:${appId}` : `${resource}:${steamId}:${appId ?? ''}`;
       const cached = cache.get(cacheKey);
       if (cached && cached.expires > now()) return json(cached.body);
       cache.delete(cacheKey);
@@ -57,7 +59,9 @@ export function createWorker(upstream: typeof fetch = fetch, now = Date.now) {
         if (pending.size >= 20) throw new ApiError('rate_limited', 429);
         operation = (async () => {
           if (!(await env.STEAM_LIMITER!.limit({ key: 'all-steam-requests' })).success) throw new ApiError('rate_limited', 429);
-          const body = await fetchSteam(resource, steamId, env.STEAM_API_KEY!, upstream, appId);
+          const body = resource === 'players' || resource === 'reviews'
+            ? await fetchCommunity(resource, appId!, upstream, now)
+            : await fetchSteam(resource, steamId, env.STEAM_API_KEY!, upstream, appId);
           if (body.status === 'available') {
             if (cache.size >= 100) cache.delete(cache.keys().next().value!);
             cache.set(cacheKey, { expires: now() + 60000, body });

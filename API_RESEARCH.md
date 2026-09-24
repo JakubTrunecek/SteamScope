@@ -55,3 +55,11 @@ Max Payne returned HTTP 400 with an empty object for GetUserStatsForGame, which 
 Private profiles and malformed payloads are covered by synthetic tests; they were not newly verified against private live accounts. Raw upstream payloads and request URLs are not stored in the repository.
 
 Reference: [ISteamUserStats methods and parameters](https://partner.steamgames.com/doc/webapi/ISteamUserStats).
+
+## R-002 / 0.0.11 — Public community context (2026-09-24)
+
+Verified without credentials: GetNumberOfCurrentPlayers v1 on api.steampowered.com and Store appreviews summaries on store.steampowered.com for apps 550, 730 and 379430. All six calls succeeded. Snapshot counts: L4D2 19,524 players / 1,059,522 reviews; CS2 1,203,287 / 9,878,764; KCD 3,795 / 185,985. Values change over time and are not fixtures or promised current totals.
+
+Reviews request all languages, all purchase types and both positive/negative reviews with off-topic filtering enabled. num_per_page=0 returned the aggregate summary without review text. We compute positive share from validated counts, not the returned score category. This selection can differ from the store headline. Zero reviews has no percentage. Current players excludes Steam-offline players and is not a daily peak or unique-player count.
+
+Sources: [Current players](https://partner.steamgames.com/doc/webapi/ISteamUserStats#GetNumberOfCurrentPlayers), [Review summary parameters](https://partner.steamgames.com/doc/store/getreviews).

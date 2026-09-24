@@ -47,3 +47,7 @@ Achievements and stats have independent per-game capability states. A failed req
 - [Steam ISteamUser](https://partner.steamgames.com/doc/webapi/ISteamUser)
 - [Cloudflare rate limiting](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/)
 - [Steam ISteamUserStats](https://partner.steamgames.com/doc/webapi/ISteamUserStats)
+
+## 0.0.11 — Public game context
+
+GET /api/games/:appId/players and /reviews are app-scoped and require no SteamID or Steam key. They use only fixed HTTPS api.steampowered.com and store.steampowered.com destinations, respectively. No caller query parameters, redirect following or raw upstream error output is allowed. Both share existing rate limits, pending-request bounds and 60-second cache; normalized data includes its original fetch timestamp. Store responses are reduced to validated aggregate counts; individual reviewers and review text are discarded. Game Detail loads both panels independently of player capabilities.

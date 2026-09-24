@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { isAppId, isSteamId } from '../../shared/api';
 import { GameCapabilities } from './GameCapabilities';
+import { GameCommunity } from './GameCommunity';
 import { Overview, Library, GameSummary } from './SteamScreens';
 
 function Health() {
@@ -74,7 +75,7 @@ function Screen({ path }: { path: string }) {
     <p className="eyebrow">STEAM ID {id}</p>
     <h1>{appId ? 'Game Detail' : library ? 'Library' : 'Profile Overview'}</h1>
     {appId ? <GameSummary id={id} appId={Number(appId)} /> : library ? <Library id={id} /> : <Overview id={id} />}
-    {appId && <GameCapabilities id={id} appId={appId} />}
+    {appId && <><GameCommunity appId={appId} /><GameCapabilities id={id} appId={appId} /></>}
   </>;
 }
 
@@ -92,7 +93,7 @@ export function App() {
   }, []);
   return <>
     <a className="skip" href="#main" onClick={(event) => { event.preventDefault(); document.getElementById('main')?.focus(); }}>Skip to content</a>
-    <header><a className="brand" href="#/">Steam<span>Scope</span></a><span className="badge">0.0.10 · Preview</span></header>
+    <header><a className="brand" href="#/">Steam<span>Scope</span></a><span className="badge">0.0.11 · Preview</span></header>
     <main id="main" tabIndex={-1}><Screen key={path} path={path} /></main>
     <footer><span>SteamScope · Independent Steam explorer</span><Health /></footer>
   </>;

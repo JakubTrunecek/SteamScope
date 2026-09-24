@@ -33,3 +33,6 @@ Decisions D-001 through D-007 are locked by the owner handoff (2026-09-21).
 - D-018: Only explicit Steam failures establish private/unsupported states. An empty 400 response is ambiguous not-exposed data; outages remain errors.
 - D-019: Achievement progress uses only the selected game's returned player list. Unknown unlock dates are null. Hidden locked descriptions remain concealed in the UI.
 - D-020: Player caches include app and player; public metadata caches include app. One request token per actual upstream call, even when the detail loads several independent sections.
+
+- D-021: Public player counts and review aggregates use keyless app-scoped routes. Steam credentials never go to the Store API.
+- D-022: Reviews cover all languages/purchase types with off-topic filtering; display scope and calculate positive share from validated totals. No reviews is not 0% positive. Player counts are timestamped snapshots, not peaks or tracking.

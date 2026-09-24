@@ -91,3 +91,10 @@ Excluded from MVP: DB, login, tracking, social and AI features.
 - [x] Clear results explicitly; full reload clears memory. No browser storage, DB or tracking.
 - [x] Select calendar days to see exact supplied unlock times, labels and game links, including honest empty-day states.
 - [x] Bound long daily lists and verify profile isolation, navigation restoration, stale library entries and calendar boundaries.
+
+## 0.0.11 — Community context in Game Detail
+
+- [x] Audit public current-player counts and review summaries on three games.
+- [x] Add independent, timestamped community panels with explicit review scope and zero/missing/error states.
+- [x] Keep public requests keyless, validate aggregate totals, reuse rate limits and bounded cache.
+- [x] 94 automated tests, frontend build and production Worker dry run pass.

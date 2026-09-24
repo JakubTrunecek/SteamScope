@@ -111,3 +111,5 @@ button.calendar-day[aria-pressed='true'] { border-color: #80ddd0; outline: 2px s
 .daily-unlocks { padding-left: 1.2rem; }
 .daily-unlocks li { margin-bottom: .8rem; }
 .daily-unlocks span { display: block; font-size: .85rem; color: #a8b6c8; }
+
+.community-value { font-size: clamp(2rem, 5vw, 3rem); font-weight: 750; color: #78dbc9; margin: 1rem 0 0; overflow-wrap: anywhere; }

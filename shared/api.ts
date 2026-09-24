@@ -36,3 +36,5 @@ export type StatsResult = Capability<DetailedStat[]>;
 export type AchievementsResult = Capability<Achievement[]>;
 export type SchemaResult = Capability<GameSchema>;
 export type GlobalResult = Capability<{ name: string; percent: number }[]>;
+export type CurrentPlayersResult = Capability<{ count: number; fetchedAt: number }>;
+export type ReviewsResult = Capability<{ positive: number; negative: number; total: number; fetchedAt: number }>;

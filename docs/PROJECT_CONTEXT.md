@@ -73,3 +73,7 @@ Overview now offers on-demand batches of five games ordered by recorded playtime
 ## 0.0.10 — Calendar drill-down and tab memory
 
 Completed collection results and selected month/day now survive route navigation for up to three profiles in the current tab. The cache is memory-only and bounded; reload or explicit Clear loaded results discards it. Returning to Overview does not restart achievement calls. Games absent from the freshly returned library are dropped. Leaving Overview still aborts the unfinished scan. Calendar day buttons expose selected state and open a labelled region of dated unlocks with game links and UTC times; lists reveal 30 rows at a time. No API changes or new secrets. Validation: 86 tests pass, including cache isolation/eviction, remount restoration, clear, missing dates and UTC leap-day boundaries.
+
+## 0.0.11 — Community context
+
+Game Detail adds Playing now and Community reviews. Counts and review totals were verified on L4D2, CS2 and KCD without credentials. New app-scoped routes share existing guards/cache and expose aggregate data only. Review scope is all languages/purchase types, with off-topic filtering; timestamps make snapshot age explicit. No changes to generic stats or achievement semantics. Validation: 94 tests pass (65 Worker, 29 frontend), frontend build and Worker production dry run pass.
