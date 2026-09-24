@@ -98,3 +98,11 @@ Excluded from MVP: DB, login, tracking, social and AI features.
 - [x] Add independent, timestamped community panels with explicit review scope and zero/missing/error states.
 - [x] Keep public requests keyless, validate aggregate totals, reuse rate limits and bounded cache.
 - [x] 94 automated tests, frontend build and production Worker dry run pass.
+
+## 0.0.12 — Review discovery in Library
+
+- [x] Load public review summaries in explicit, paced batches of five games matching name/playtime filters.
+- [x] Sort by positive share and sample size; filter by percentage and minimum review count.
+- [x] Show not-loaded, unavailable, zero-review and dated aggregate states separately.
+- [x] Preserve up to 500 public game summaries in tab memory, abort on navigation, keep successful rows on errors.
+- [x] 97 tests pass, including batch size, rate-limit retry, cancellation and filter boundaries.

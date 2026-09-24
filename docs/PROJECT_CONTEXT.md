@@ -77,3 +77,7 @@ Completed collection results and selected month/day now survive route navigation
 ## 0.0.11 — Community context
 
 Game Detail adds Playing now and Community reviews. Counts and review totals were verified on L4D2, CS2 and KCD without credentials. New app-scoped routes share existing guards/cache and expose aggregate data only. Review scope is all languages/purchase types, with off-topic filtering; timestamps make snapshot age explicit. No changes to generic stats or achievement semantics. Validation: 94 tests pass (65 Worker, 29 frontend), frontend build and Worker production dry run pass.
+
+## 0.0.12 — Review discovery
+
+Library now offers on-demand review loading for games matching its name and playtime filters. A batch captures at most five games and requests one public review endpoint every 2.5 seconds; changing filters during loading does not change the captured batch. Rating and sample-size filters apply only to loaded, non-empty summaries. Review sorting places unknown percentages last, preserves genuine zero scores, and breaks equal percentages by sample size. Each row states data coverage and fetch time. Public app summaries (no player data) stay in bounded tab memory for up to 500 games until reload. No new backend routes or secrets. Validation: 97 tests (65 Worker, 32 frontend), frontend build.

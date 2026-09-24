@@ -113,3 +113,8 @@ button.calendar-day[aria-pressed='true'] { border-color: #80ddd0; outline: 2px s
 .daily-unlocks span { display: block; font-size: .85rem; color: #a8b6c8; }
 
 .community-value { font-size: clamp(2rem, 5vw, 3rem); font-weight: 750; color: #78dbc9; margin: 1rem 0 0; overflow-wrap: anywhere; }
+
+.library-review { display: block; text-align: left; color: #a9b9ce; margin-top: .4rem; line-height: 1.5; }
+.review-discovery { margin: 1.5rem 0; padding-top: 1.5rem; border-top: 1px solid #29384d; }
+
+.game-list li > div { min-width: 0; }
