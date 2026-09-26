@@ -85,3 +85,7 @@ Library now offers on-demand review loading for games matching its name and play
 ## 0.0.13 â€” Achievement year
 
 The loaded achievement collection now includes annual totals, active unlock days, longest UTC daily streak within the selected year, and best day (earliest wins ties). A twelve-month chart opens the corresponding calendar and moves keyboard focus there. Year selection follows the selected calendar month, preserving existing in-tab navigation state. Empty months mean no dated unlocks in loaded data, not proof of inactivity. Unknown dates remain excluded and reported by the collection; no additional API calls, tracking or persistence. Validation: 100 tests (65 Worker, 35 frontend) and production frontend build passed.
+
+## 0.0.14 — Choose scan size
+
+Achievement and review scans offer 5, 20 or all remaining games, with completed/selected progress. Requests remain paced, errors stop the queue, and cancellation preserves completed games for retry without duplicates. Navigation stops loading. Review results on the current page are retained even beyond 500 games; only the cross-navigation public cache remains capped at 500. Validation: 102 tests and frontend build pass, including twenty-game batches and stop/resume of all remaining games for both scans.

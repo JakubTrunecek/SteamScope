@@ -20,14 +20,16 @@ export function matchesReviews(result: ReviewsResult | undefined, threshold: str
 }
 export function useLibraryReviews(profile: string) {
   const [reviews, setReviews] = useState(() => new Map(memory));
+  const [progress, setProgress] = useState({ done: 0, total: 0 });
   const [running, setRunning] = useState(false);
   const [message, setMessage] = useState('');
   const active = useRef<AbortController | null>(null);
   useEffect(() => { setMessage(''); setRunning(false); return () => { active.current?.abort(); active.current = null; }; }, [profile]);
-  async function load(games: Game[]) {
+  async function load(games: Game[], size = '5') {
     if (active.current) return;
     const controller = new AbortController(); active.current = controller; setRunning(true);
-    const queue = games.filter(game => !reviews.has(game.appId)).slice(0, 5);
+    const queue = games.filter(game => !reviews.has(game.appId)).slice(0, size === 'all' ? undefined : Number(size));
+    setProgress({ done: 0, total: queue.length });
     try {
       for (const game of queue) {
         setMessage(`Loading reviews for ${game.name}…`);
@@ -46,7 +48,8 @@ export function useLibraryReviews(profile: string) {
         if (controller.signal.aborted) break;
         memory.delete(game.appId); memory.set(game.appId, result);
         while (memory.size > 500) memory.delete(memory.keys().next().value!);
-        setReviews(new Map(memory));
+        setReviews(previous => new Map(previous).set(game.appId, result));
+        setProgress(previous => ({ ...previous, done: previous.done + 1 }));
       }
       if (!controller.signal.aborted) setMessage('Batch finished. Load another batch to expand coverage.');
     } catch (error) {
@@ -55,5 +58,5 @@ export function useLibraryReviews(profile: string) {
       if (active.current === controller) { active.current = null; setRunning(false); }
     }
   }
-  return { reviews, running, message, load, stop: () => { active.current?.abort(); setMessage('Stopped. Loaded reviews are kept.'); } };
+  return { reviews, running, message, progress, load, stop: () => { active.current?.abort(); setMessage('Stopped. Loaded reviews are kept.'); } };
 }

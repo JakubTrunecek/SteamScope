@@ -113,3 +113,7 @@ Excluded from MVP: DB, login, tracking, social and AI features.
 - [x] Twelve-month chart with keyboard-accessible calendar drill-down and year selection.
 - [x] Explicit loaded-game coverage, UTC dates and year-boundary streak semantics; no extra requests.
 - [x] 100 tests pass, including leap days, gaps, year boundaries, ties, empty years and focus behavior.
+
+## 0.0.14 — Choose scan size
+
+Achievement and review scans offer 5, 20 or all remaining games, with completed/selected progress. Requests remain paced, errors stop the queue, and cancellation preserves completed games for retry without duplicates. Navigation stops loading. Review results on the current page are retained even beyond 500 games; only the cross-navigation public cache remains capped at 500. Validation: 102 tests and frontend build pass, including twenty-game batches and stop/resume of all remaining games for both scans.

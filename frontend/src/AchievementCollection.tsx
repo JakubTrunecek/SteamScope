@@ -1,3 +1,4 @@
+import { ScanSize, ScanProgress } from './ScanSize';
 import { useEffect, useRef, useState } from 'react';
 import type { AchievementsResult, Game, GlobalResult, SchemaResult } from '../../shared/api';
 import { collectionInsights, type ScannedGame } from './collectionInsights';
@@ -6,6 +7,8 @@ import { AchievementYear } from './AchievementYear';
 
 export function AchievementCollection({ id, games }: { id: string; games: Game[] }) {
   const [rows, setRows] = useState<ScannedGame[]>(() => readCollection(id).rows.filter(row => games.some(game => game.appId === row.game.appId)));
+  const [size, setSize] = useState('5');
+  const [progress, setProgress] = useState({ done: 0, total: 0 });
   const [running, setRunning] = useState(false);
   const [message, setMessage] = useState('');
   const [month, setMonth] = useState(() => readCollection(id).month);
@@ -21,7 +24,8 @@ export function AchievementCollection({ id, games }: { id: string; games: Game[]
   async function scan() {
     if (active.current) return;
     const controller = new AbortController(); active.current = controller; setRunning(true); setMessage('');
-    const queue = [...games].filter(game => !rows.some(row => row.game.appId === game.appId)).sort((a, b) => (b.playtimeMinutes ?? -1) - (a.playtimeMinutes ?? -1)).slice(0, 5);
+    const queue = [...games].filter(game => !rows.some(row => row.game.appId === game.appId)).sort((a, b) => (b.playtimeMinutes ?? -1) - (a.playtimeMinutes ?? -1)).slice(0, size === 'all' ? undefined : Number(size));
+    setProgress({ done: 0, total: queue.length });
     async function request<T>(appId: number, kind: string): Promise<T> {
       // Pace every request below the proxy's per-IP budget, including metadata.
       await new Promise<void>((resolve, reject) => {
@@ -47,9 +51,11 @@ export function AchievementCollection({ id, games }: { id: string; games: Game[]
           if (schema.status === 'available') for (const item of schema.data.achievements ?? []) if (item.displayName) row.labels[item.name] = item.displayName;
           if (global.status === 'available') for (const item of global.data) row.percentages[item.name] = item.percent;
         }
-        if (!controller.signal.aborted) setRows(previous => [...previous, row]);
+        if (controller.signal.aborted) break;
+        setRows(previous => [...previous, row]);
+        setProgress(previous => ({ ...previous, done: previous.done + 1 }));
       }
-      setMessage('Batch finished. You can load the next five games.');
+      if (!controller.signal.aborted) setMessage('Selected games finished. Completed results are kept.');
     } catch (error) {
       if (!controller.signal.aborted) setMessage(error instanceof Error ? error.message : 'Unable to load achievements.');
     } finally {
@@ -58,10 +64,10 @@ export function AchievementCollection({ id, games }: { id: string; games: Game[]
   }
   const link = (game: Game) => `#/profile/${id}/game/${game.appId}`;
   return <section className="card section"><h2>Achievements across your library</h2>
-    <p>Discover your rarest unlocks, completed games and achievement calendar. Load five games at a time, most played first.</p>
+    <p>Discover your rarest unlocks, completed games and achievement calendar. Choose how many games to load, most played first. Larger selections can take several minutes. Keep this page open; leaving stops loading.</p>
     <p className="muted">Results cover only loaded games. Your last three explored profiles stay in this tab while you navigate; reloading clears them. Saved results are a snapshot, not live tracking. This is achievement activity, not hours played. Dates use UTC.</p>
     <p role="status">{rows.length} of {games.length} games checked · {insights.supported} with achievements · {rows.filter(row => row.achievements === null).length} unavailable · {rows.filter(row => row.achievements?.length === 0).length} empty lists</p>
-    <div className="result-actions"><button disabled={running || rows.length === games.length} onClick={() => void scan()}>{rows.length ? 'Load next 5 games' : 'Explore achievements'}</button>{running && <button onClick={() => { active.current?.abort(); setMessage('Stopped. Completed games are kept; continue whenever you like.'); }}>Stop loading</button>}{rows.length > 0 && <button disabled={running} onClick={() => { clearCollection(id); setRows([]); setMonth(''); setDay(''); setDayShown(30); setMessage('Results cleared. Explore again to fetch a new snapshot.'); }}>Clear loaded results</button>}</div>
+    <ScanSize value={size} onChange={setSize} running={running} label="Achievement scan size" /><ScanProgress progress={progress} /><div className="result-actions"><button disabled={running || rows.length === games.length} onClick={() => void scan()}>{rows.length ? size === 'all' ? 'Load all remaining games' : `Load next ${size} games` : 'Explore achievements'}</button>{running && <button onClick={() => { active.current?.abort(); setMessage('Stopped. Completed games are kept; continue whenever you like.'); }}>Stop loading</button>}{rows.length > 0 && <button disabled={running} onClick={() => { clearCollection(id); setProgress({ done: 0, total: 0 }); setRows([]); setMonth(''); setDay(''); setDayShown(30); setMessage('Results cleared. Explore again to fetch a new snapshot.'); }}>Clear loaded results</button>}</div>
     <p role="status">{message}</p>
     {!!rows.length && <><p><strong>{insights.unlocked}</strong> unlocked achievements in loaded games · {insights.undated} without a usable date</p>
       <AchievementYear days={insights.days} month={selectedMonth ?? ''} onMonth={(value, focus) => { setMonth(value); setDay(''); setDayShown(30); if (focus) { const calendar = document.getElementById('unlock-month'); calendar?.focus(); calendar?.scrollIntoView({ block: 'center' }); } }} />
