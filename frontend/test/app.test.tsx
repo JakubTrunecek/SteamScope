@@ -35,7 +35,7 @@ describe('Navigation and library interactions', () => {
     const user = userEvent.setup(); render(<App />);
     await user.click(screen.getByRole('button', { name: 'Explore profile →' }));
     expect(screen.getByRole('alert')).toHaveTextContent('valid 17-digit');
-    await user.type(screen.getByLabelText('SteamID64 or numeric profile link'), input);
+    await user.type(screen.getByLabelText('SteamID64 or profile link'), input);
     await user.click(screen.getByRole('button', { name: 'Explore profile →' }));
     expect(await screen.findByRole('heading', { name: 'Profile Overview' })).toBeVisible();
     expect(screen.getByRole('main')).toHaveFocus();

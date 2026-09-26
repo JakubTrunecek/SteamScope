@@ -1,8 +1,9 @@
+import { isSteamId, type ResolveResult } from '../../shared/api';
 import type { Game, GamesResult, ProfileResult, StatsResult, AchievementsResult, SchemaResult, GlobalResult } from '../../shared/api';
 import { ApiError } from './errors';
 import { explicitFailure, parseAchievements, parseGlobal, parseSchema, parseStats } from './capabilities';
 export { ApiError } from './errors';
-export type Resource = 'profile' | 'library' | 'recent' | 'stats' | 'achievements' | 'schema' | 'global';
+export type Resource = 'resolve' | 'profile' | 'library' | 'recent' | 'stats' | 'achievements' | 'schema' | 'global';
 function record(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new ApiError('invalid_steam_response', 502);
   return value as Record<string, unknown>;
@@ -41,8 +42,9 @@ export function parseProfile(body: unknown, steamId: string): ProfileResult {
   return { status: 'available', steamId, name: player.personaname,
     visibility: player.communityvisibilitystate === 3 ? 'public' : [1, 2].includes(Number(player.communityvisibilitystate)) ? 'private' : 'unknown' };
 }
-export async function fetchSteam(resource: Resource, steamId: string, key: string, upstream: typeof fetch, appId?: string): Promise<GamesResult | ProfileResult | StatsResult | AchievementsResult | SchemaResult | GlobalResult> {
+export async function fetchSteam(resource: Resource, steamId: string, key: string, upstream: typeof fetch, appId?: string): Promise<ResolveResult | GamesResult | ProfileResult | StatsResult | AchievementsResult | SchemaResult | GlobalResult> {
   const endpoints: Record<Resource, string> = {
+    resolve: 'ISteamUser/ResolveVanityURL/v1/',
     profile: 'ISteamUser/GetPlayerSummaries/v0002/', library: 'IPlayerService/GetOwnedGames/v0001/', recent: 'IPlayerService/GetRecentlyPlayedGames/v0001/',
     stats: 'ISteamUserStats/GetUserStatsForGame/v2/', achievements: 'ISteamUserStats/GetPlayerAchievements/v1/',
     schema: 'ISteamUserStats/GetSchemaForGame/v2/', global: 'ISteamUserStats/GetGlobalAchievementPercentagesForApp/v2/',
@@ -51,7 +53,8 @@ export async function fetchSteam(resource: Resource, steamId: string, key: strin
   const url = new URL(endpoint, 'https://api.steampowered.com/');
   if (resource !== 'global') url.searchParams.set('key', key);
   url.searchParams.set('format', 'json');
-  if (resource === 'profile') url.searchParams.set('steamids', steamId);
+  if (resource === 'resolve') { url.searchParams.set('vanityurl', steamId); url.searchParams.set('url_type', '1'); }
+  else if (resource === 'profile') url.searchParams.set('steamids', steamId);
   else if (resource === 'library' || resource === 'recent') url.searchParams.set('input_json', JSON.stringify(resource === 'library'
     ? { steamid: steamId, include_appinfo: true, include_played_free_games: true }
     : { steamid: steamId, count: 0 }));
@@ -83,6 +86,12 @@ export async function fetchSteam(resource: Resource, steamId: string, key: strin
       }
     }
     if (!response.ok) throw new ApiError(response.status === 403 ? 'steam_auth_error' : 'steam_unavailable', 502);
+    if (resource === 'resolve') {
+      const result = record(record(body).response);
+      if (result.success === 42) return { status: 'unavailable', reason: 'not_found' };
+      if (result.success !== 1 || typeof result.steamid !== 'string' || !isSteamId(result.steamid)) throw new ApiError('invalid_steam_response', 502);
+      return { status: 'available', steamId: result.steamid };
+    }
     if (resource === 'profile') return parseProfile(body, steamId);
     if (resource === 'stats') return parseStats(body, steamId);
     if (resource === 'achievements') return parseAchievements(body, steamId);

@@ -38,3 +38,6 @@ export type SchemaResult = Capability<GameSchema>;
 export type GlobalResult = Capability<{ name: string; percent: number }[]>;
 export type CurrentPlayersResult = Capability<{ count: number; fetchedAt: number }>;
 export type ReviewsResult = Capability<{ positive: number; negative: number; total: number; fetchedAt: number }>;
+
+export type ResolveResult = { status: 'available'; steamId: string } | { status: 'unavailable'; reason: 'not_found' };
+export function isVanityName(value: string): boolean { return /^[A-Za-z0-9_-]{1,64}$/.test(value); }

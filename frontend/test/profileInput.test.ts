@@ -7,7 +7,8 @@ it('extracts exact IDs from numeric Steam links without fetching or carrying que
 it('rejects foreign hosts, credentials, ports, non-profile paths and invalid individual IDs', () => {
   for (const value of ['', '76561197960265728', '76561202255233024', `https://steamcommunity.com.evil.test/profiles/${id}`, `https://evil.test/steamcommunity.com/profiles/${id}`, `https://user@steamcommunity.com/profiles/${id}`, `https://steamcommunity.com:444/profiles/${id}`, `ftp://steamcommunity.com/profiles/${id}`, `https://steamcommunity.com/profiles/${id}/games`, `https://steamcommunity.com/profiles/${id}\\other`, 'javascript:alert(1)', `https://steamcommunity.com/profiles/ ${id}`]) expect(parseProfileInput(value)).toHaveProperty('error');
 });
-it('explains the unsupported custom URL instead of guessing an ID', () => {
-  expect(parseProfileInput('https://steamcommunity.com/id/example/')).toEqual({ error: expect.stringContaining('Custom /id/') });
-  expect(parseProfileInput(`https://steamcommunity.com/id/${id}`)).toHaveProperty('error');
+it('parses custom links without confusing numeric vanity names with account IDs', () => {
+ expect(parseProfileInput('https://steamcommunity.com/id/example/')).toEqual({ vanity: 'example' });
+ expect(parseProfileInput(`https://steamcommunity.com/id/${id}`)).toEqual({ vanity: id });
+ expect(parseProfileInput('https://steamcommunity.com/id/%2F')).toHaveProperty('error');
 });

@@ -63,3 +63,7 @@ Verified without credentials: GetNumberOfCurrentPlayers v1 on api.steampowered.c
 Reviews request all languages, all purchase types and both positive/negative reviews with off-topic filtering enabled. num_per_page=0 returned the aggregate summary without review text. We compute positive share from validated counts, not the returned score category. This selection can differ from the store headline. Zero reviews has no percentage. Current players excludes Steam-offline players and is not a daily peak or unique-player count.
 
 Sources: [Current players](https://partner.steamgames.com/doc/webapi/ISteamUserStats#GetNumberOfCurrentPlayers), [Review summary parameters](https://partner.steamgames.com/doc/store/getreviews).
+
+## Custom profile resolution (2026-09-26)
+
+Steam documents ResolveVanityURL v1 with key, vanityurl and url_type=1 for individual profiles: https://partner.steamgames.com/doc/webapi/ISteamUser?l=english#ResolveVanityURL. The adapter uses the existing public Web API origin api.steampowered.com. Success requires a validated individual SteamID; success=42 represents no match. Other response shapes fail explicitly.

@@ -1,5 +1,5 @@
 import { parseProfileInput } from './profileInput';
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { isAppId, isSteamId } from '../../shared/api';
 import { GameCapabilities } from './GameCapabilities';
 import { GameCommunity } from './GameCommunity';
@@ -33,27 +33,46 @@ function Health() {
 function Home() {
   const [steamId, setSteamId] = useState('');
   const [error, setError] = useState('');
-  function submit(event: FormEvent) {
+  const [resolving, setResolving] = useState(false);
+  const active = useRef<AbortController | null>(null);
+  useEffect(() => () => { active.current?.abort(); active.current = null; }, []);
+  async function submit(event: FormEvent) {
     event.preventDefault();
     const result = parseProfileInput(steamId);
     if ('error' in result) {
       setError(result.error);
       return;
     }
-    location.hash = `/profile/${result.steamId}`;
+    active.current?.abort(); active.current = null;
+    if ('steamId' in result) { location.hash = `/profile/${result.steamId}`; return; }
+    const controller = new AbortController(); active.current = controller; setResolving(true); setError('');
+    try {
+      const base = import.meta.env.VITE_API_BASE_URL;
+      if (!base) throw new Error('Backend is not configured.');
+      const response = await fetch(`${base.replace(/\/$/, '')}/api/resolve/${encodeURIComponent(result.vanity)}`, { signal: AbortSignal.any([controller.signal, AbortSignal.timeout(12000)]) });
+      if (!response.ok) throw new Error(response.status === 429 ? 'Too many requests. Wait a minute, then try again.' : 'Could not resolve this profile. Please try again.');
+      const body = await response.json();
+      if (active.current !== controller) return;
+      if (body?.status === 'unavailable' && body.reason === 'not_found') throw new Error('Steam could not find this custom profile address. Check the link and try again.');
+      if (body?.status !== 'available' || typeof body.steamId !== 'string' || !isSteamId(body.steamId)) throw new Error('Steam returned an unexpected profile response.');
+      location.hash = `/profile/${body.steamId}`;
+    } catch (failure) {
+      if (active.current === controller) setError(failure instanceof Error && failure.name === 'Error' ? failure.message : 'Could not resolve this profile. Please try again.');
+    } finally { if (active.current === controller) { active.current = null; setResolving(false); } }
+
   }
   return <>
     <p className="eyebrow">YOUR GAMES, IN PERSPECTIVE</p>
     <h1>Explore your Steam universe.</h1>
     <p className="lead">Your profile, library and game statistics in one place.</p>
     <form onSubmit={submit} className="card">
-      <label htmlFor="steam-id">SteamID64 or numeric profile link</label>
+      <label htmlFor="steam-id">SteamID64 or profile link</label>
       <div className="input-row"><input id="steam-id" type="text" autoCapitalize="none" spellCheck={false} value={steamId}
-        onChange={(event) => { setSteamId(event.target.value); setError(''); }} placeholder="Steam ID or steamcommunity.com/profiles/…"
+        onChange={(event) => { active.current?.abort(); active.current = null; setResolving(false); setSteamId(event.target.value); setError(''); }} placeholder="Steam ID or steamcommunity.com/profiles/…"
         aria-invalid={Boolean(error)} aria-describedby={error ? 'profile-input-help id-error' : 'profile-input-help'} />
-        <button type="submit">Explore profile →</button></div>
+        <button type="submit" disabled={resolving}>{resolving ? 'Finding profile…' : 'Explore profile →'}</button></div>
       {error && <p id="id-error" role="alert">{error}</p>}
-      <p id="profile-input-help" className="muted">Paste a 17-digit ID or a numeric Steam profile link. Custom /id/ links are not supported yet.</p>
+      <p id="profile-input-help" className="muted">Paste a 17-digit ID or a Steam profile link (/profiles/ or /id/). Custom addresses are looked up through Steam.</p>
       <p className="muted">Explore the profile and game details Steam makes visible. No sign-in required.</p>
     </form>
     <div className="grid">
@@ -96,7 +115,7 @@ export function App() {
   }, []);
   return <>
     <a className="skip" href="#main" onClick={(event) => { event.preventDefault(); document.getElementById('main')?.focus(); }}>Skip to content</a>
-    <header><a className="brand" href="#/">Steam<span>Scope</span></a><span className="badge">0.0.17 · Preview</span></header>
+    <header><a className="brand" href="#/">Steam<span>Scope</span></a><span className="badge">0.0.18 · Preview</span></header>
     <main id="main" tabIndex={-1}><Screen key={path} path={path} /></main>
     <footer><span>SteamScope · Independent Steam explorer</span><Health /></footer>
   </>;

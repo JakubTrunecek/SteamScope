@@ -1,4 +1,4 @@
-import { isAppId, isSteamId } from '../../shared/api';
+import { isAppId, isSteamId, isVanityName } from '../../shared/api';
 import { ApiError, fetchSteam, type Resource } from './steam';
 import { fetchCommunity } from './community';
 
@@ -26,11 +26,12 @@ export function createWorker(upstream: typeof fetch = fetch, now = Date.now) {
     if (origin && origin !== env.ALLOWED_ORIGIN) return json({ error: 'origin_not_allowed' }, 403);
     if (origin) headers.set('Access-Control-Allow-Origin', origin);
     const url = new URL(request.url);
+    const resolveMatch = /^\/api\/resolve\/([^/]+)$/.exec(url.pathname);
     const health = url.pathname === '/api/health';
     const match = /^\/api\/players\/([^/]+)\/(profile|library|recent)$/.exec(url.pathname);
     const gameMatch = /^\/api\/players\/([^/]+)\/games\/([^/]+)\/(stats|achievements|schema|global)$/.exec(url.pathname);
     const communityMatch = /^\/api\/games\/([^/]+)\/(players|reviews)$/.exec(url.pathname);
-    if (!health && !match && !gameMatch && !communityMatch) return json({ error: 'not_found' }, 404);
+    if (!health && !match && !gameMatch && !communityMatch && !resolveMatch) return json({ error: 'not_found' }, 404);
     if (url.search) return json({ error: 'unexpected_query' }, 400);
     if (request.method === 'OPTIONS') {
       headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -41,10 +42,11 @@ export function createWorker(upstream: typeof fetch = fetch, now = Date.now) {
       return json({ error: 'method_not_allowed' }, 405);
     }
     if (health) return json({ status: 'ok', service: 'steamscope-worker' });
-    const steamId = (match ?? gameMatch)?.[1] ?? '';
-    const resource = (communityMatch ? communityMatch[2] : match ? match[2] : gameMatch![3]) as Resource | 'players' | 'reviews';
+    const steamId = resolveMatch?.[1] ?? (match ?? gameMatch)?.[1] ?? '';
+    if (resolveMatch && !isVanityName(steamId)) return json({ error: 'invalid_steam_id' }, 400);
+    const resource = (resolveMatch ? 'resolve' : communityMatch ? communityMatch[2] : match ? match[2] : gameMatch![3]) as Resource | 'players' | 'reviews';
     const appId = communityMatch?.[1] ?? gameMatch?.[2];
-    if (!communityMatch && !isSteamId(steamId)) return json({ error: 'invalid_steam_id' }, 400);
+    if (!resolveMatch && !communityMatch && !isSteamId(steamId)) return json({ error: 'invalid_steam_id' }, 400);
     if (appId !== undefined && !isAppId(appId)) return json({ error: 'invalid_app_id' }, 400);
     if ((!communityMatch && !env.STEAM_API_KEY?.trim()) || !env.REQUEST_LIMITER || !env.STEAM_LIMITER) return json({ error: 'not_configured' }, 503);
     try {

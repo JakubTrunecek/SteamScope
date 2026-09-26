@@ -122,3 +122,9 @@ Highlights, Activity & calendar and Achievement Explorer now occupy separate sel
 ## 0.0.17 - Numeric profile links
 
 Home accepts SteamID64 or a numeric steamcommunity.com/profiles/ link, including protocol-free links, optional trailing slash and query/fragment suffixes. Validation only extracts the exact individual account ID locally; arbitrary URLs are never fetched. Unsupported custom /id/ links receive an explicit explanation. Input help stays associated with the field and editing clears stale errors. 110 tests and frontend build pass. Custom vanity URL resolution remains a separate future backend enhancement; this release does not implement it. Browser visual verification remains unavailable.
+
+## 0.0.18 - Custom Steam profile addresses
+
+Home resolves /id/ links through GET /api/resolve/:vanity. The fixed Steam ResolveVanityURL v1 adapter requests individual profiles (url_type=1), validates the returned SteamID and distinguishes not-found from malformed or failed responses. Shared pacing limits, bounded cache, CORS, timeouts and sanitized errors remain in force. The UI cancels or ignores stale lookups after edits/navigation and supports retry. Accepted aliases are 1-64 ASCII letters, digits, underscores or hyphens. No arbitrary URL fetches or client secrets. Validation: 119 tests and frontend build; Worker dry run.
+
+Production Worker deployed: f1f58d0c-9d25-4ae8-ae55-f8c2deb9e216. Live resolution returned SteamID 76561197960287930 for gabelogannewell; the test nonexistent alias returned not_found. Frontend Pages publication remains pending.
