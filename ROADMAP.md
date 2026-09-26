@@ -1,18 +1,10 @@
 # Roadmap
 
-
-
 ## 0.0.1 — R-001 Steam API Capability Audit (complete)
-
-
 
 Verified the six endpoints listed in API_RESEARCH.md. Findings support achievements and generic Detailed Stats within MVP.
 
-
-
 ## 0.0.2 — Project Skeleton
-
-
 
 - [x] Inspect repository and preserve existing history.
 
@@ -28,15 +20,9 @@ Verified the six endpoints listed in API_RESEARCH.md. Findings support achieveme
 
 - [x] Verify frontend build, TypeScript and Worker behavior.
 
-
-
 This milestone establishes a runnable shell, not live Steam integration or production deployment.
 
-
-
 ## 0.0.3 — First Live Data (complete locally)
-
-
 
 - [x] Shared API contracts and individual SteamID64 validation.
 
@@ -52,11 +38,7 @@ This milestone establishes a runnable shell, not live Steam integration or produ
 
 - [x] Live verification: 252 owned games and 4 recently played games.
 
-
-
 ## 0.0.4 — Game Detail capabilities (complete locally)
-
-
 
 - [x] Per-game achievements, global percentages, schema and generic Detailed Stats.
 
@@ -68,11 +50,7 @@ This milestone establishes a runnable shell, not live Steam integration or produ
 
 - [x] Verify all five audited stat counts against live data and exercise unsupported/ambiguous responses.
 
-
-
 ## 0.0.5 — MVP hardening and deployment
-
-
 
 - [x] Frontend interaction tests for navigation, focus, search/sort, errors/retry, stale requests and independent game capabilities.
 
@@ -88,11 +66,7 @@ This milestone establishes a runnable shell, not live Steam integration or produ
 
 - [x] Configure GitHub Pages and Cloudflare production secrets; deploy and smoke-test both environments.
 
-
-
 ## 0.0.6 — Player and library insights
-
-
 
 - [x] Most-played games chart and top-five share of known recorded time.
 
@@ -106,11 +80,7 @@ This milestone establishes a runnable shell, not live Steam integration or produ
 
 - [x] Boundary and missing-data tests; no new API requests, persistence or guessed stat meanings.
 
-
-
 ## 0.0.7 — Game detail exploration
-
-
 
 - [x] Game playtime rank (shared ranks for ties) and share of known library time.
 
@@ -120,11 +90,7 @@ This milestone establishes a runnable shell, not live Steam integration or produ
 
 - [x] Missing-data, tie and interaction tests; 75 tests pass.
 
-
-
 ## 0.0.8 — Filtered exports and achievement drill-down
-
-
 
 - [x] Open a specific achievement from a highlight, with keyboard focus on results.
 
@@ -138,27 +104,15 @@ This milestone establishes a runnable shell, not live Steam integration or produ
 
 - [x] 80 tests and a live CSV download verified.
 
-
-
 Profile URL input remains a future usability improvement; the owner prioritized statistics and achievements.
-
-
 
 ## MVP completion
 
-
-
 Complete all four screens, loading/empty/error states and accessibility review. Validate with the audited account and other visibility/capability cases. Deploy frontend to GitHub Pages and proxy to Cloudflare Workers.
-
-
 
 Excluded from MVP: DB, login, tracking, social and AI features.
 
-
-
 ## 0.0.9 — Library achievement collection
-
-
 
 - [x] User-triggered batches of five games, paced requests, cancellation and retry of unfinished games.
 
@@ -170,11 +124,7 @@ Excluded from MVP: DB, login, tracking, social and AI features.
 
 - [x] 84 automated tests pass; no persistence or new backend permissions.
 
-
-
 ## 0.0.10 — Keep exploration context and open calendar days
-
-
 
 - [x] Keep completed scan results and calendar selection across route navigation in tab memory (at most three profiles).
 
@@ -184,11 +134,7 @@ Excluded from MVP: DB, login, tracking, social and AI features.
 
 - [x] Bound long daily lists and verify profile isolation, navigation restoration, stale library entries and calendar boundaries.
 
-
-
 ## 0.0.11 — Community context in Game Detail
-
-
 
 - [x] Audit public current-player counts and review summaries on three games.
 
@@ -198,11 +144,7 @@ Excluded from MVP: DB, login, tracking, social and AI features.
 
 - [x] 94 automated tests, frontend build and production Worker dry run pass.
 
-
-
 ## 0.0.12 — Review discovery in Library
-
-
 
 - [x] Load public review summaries in explicit, paced batches of five games matching name/playtime filters.
 
@@ -214,11 +156,7 @@ Excluded from MVP: DB, login, tracking, social and AI features.
 
 - [x] 97 tests pass, including batch size, rate-limit retry, cancellation and filter boundaries.
 
-
-
 ## 0.0.13 — Achievement year
-
-
 
 - [x] Annual unlock totals, days with unlocks, longest consecutive-day streak and best day.
 
@@ -228,14 +166,9 @@ Excluded from MVP: DB, login, tracking, social and AI features.
 
 - [x] 100 tests pass, including leap days, gaps, year boundaries, ties, empty years and focus behavior.
 
-
-
 ## 0.0.14 - Choose scan size
 
-
-
 Achievement and review scans offer 5, 20 or all remaining games, with completed/selected progress. Requests remain paced, errors stop the queue, and cancellation preserves completed games for retry without duplicates. Navigation stops loading. Review results on the current page are retained even beyond 500 games; only the cross-navigation public cache remains capped at 500. Validation: 102 tests and frontend build pass, including twenty-game batches and stop/resume of all remaining games for both scans.
-
 
 ## 0.0.15 - Achievement Explorer
 
