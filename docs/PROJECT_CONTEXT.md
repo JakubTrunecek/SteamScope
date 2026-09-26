@@ -118,3 +118,7 @@ Achievement and review scans offer 5, 20 or all remaining games, with completed/
 ## 0.0.16 - Achievement dashboard views
 
 Highlights, Activity & calendar and Achievement Explorer now occupy separate selectable panels. Coverage, unlock totals, games with all achievements and games with 1-5 remaining stay above the panels alongside scan controls. Hidden panels retain local state while switching; the selected view survives route navigation in the existing three-profile tab cache. Reload still clears snapshots. Buttons expose selected state and panel relationships; controls wrap vertically on small screens. No new API requests or storage. Validation: 106 tests and frontend build pass; browser visual verification pending because browser automation is unavailable.
+
+## 0.0.17 - Numeric profile links
+
+Home accepts SteamID64 or a numeric steamcommunity.com/profiles/ link, including protocol-free links, optional trailing slash and query/fragment suffixes. Validation only extracts the exact individual account ID locally; arbitrary URLs are never fetched. Unsupported custom /id/ links receive an explicit explanation. Input help stays associated with the field and editing clears stale errors. 110 tests and frontend build pass. Custom vanity URL resolution remains a separate future backend enhancement; this release does not implement it. Browser visual verification remains unavailable.

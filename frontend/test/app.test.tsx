@@ -30,12 +30,12 @@ function mockApi(overrides: Record<string, () => Response> = {}) {
   return mock;
 }
 describe('Navigation and library interactions', () => {
-  it('validates IDs, navigates to a profile and moves focus to the new page', async () => {
+  it.each([id, `https://steamcommunity.com/profiles/${id}/?l=czech`])('validates input %s, navigates to a profile and moves focus to the new page', async input => {
     history.replaceState(null, '', '/#/'); mockApi();
     const user = userEvent.setup(); render(<App />);
     await user.click(screen.getByRole('button', { name: 'Explore profile →' }));
     expect(screen.getByRole('alert')).toHaveTextContent('valid 17-digit');
-    await user.type(screen.getByLabelText('SteamID64'), id);
+    await user.type(screen.getByLabelText('SteamID64 or numeric profile link'), input);
     await user.click(screen.getByRole('button', { name: 'Explore profile →' }));
     expect(await screen.findByRole('heading', { name: 'Profile Overview' })).toBeVisible();
     expect(screen.getByRole('main')).toHaveFocus();
