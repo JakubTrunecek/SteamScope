@@ -118,3 +118,14 @@ button.calendar-day[aria-pressed='true'] { border-color: #80ddd0; outline: 2px s
 .review-discovery { margin: 1.5rem 0; padding-top: 1.5rem; border-top: 1px solid #29384d; }
 
 .game-list li > div { min-width: 0; }
+
+.achievement-year { margin: 2rem 0; padding: 1.5rem 0; border-block: 1px solid #29384d; }
+.year-metrics { display: grid; grid-template-columns: repeat(auto-fit,minmax(150px,1fr)); gap: 1rem; }
+.year-metrics dt { color: #a9b9ce; font-size: .85rem; }
+.year-metrics dd { margin: .4rem 0 0; font-size: 1.8rem; font-weight: 700; }
+.month-chart { list-style: none; padding: 0; }
+.month-chart button { display: grid; grid-template-columns: 4rem minmax(0,1fr) 3rem; gap: .7rem; align-items: center; width: 100%; padding: .6rem; text-align: left; background: transparent; color: #e5edf7; }
+.month-chart button[aria-pressed='true'] { background: #23394a; }
+.month-track { height: .7rem; background: #243247; border-radius: .3rem; overflow: hidden; }
+.month-track > span { display: block; height: 100%; background: #78dbc9; }
+.month-chart strong { text-align: right; }

@@ -106,3 +106,10 @@ Excluded from MVP: DB, login, tracking, social and AI features.
 - [x] Show not-loaded, unavailable, zero-review and dated aggregate states separately.
 - [x] Preserve up to 500 public game summaries in tab memory, abort on navigation, keep successful rows on errors.
 - [x] 97 tests pass, including batch size, rate-limit retry, cancellation and filter boundaries.
+
+## 0.0.13 — Achievement year
+
+- [x] Annual unlock totals, days with unlocks, longest consecutive-day streak and best day.
+- [x] Twelve-month chart with keyboard-accessible calendar drill-down and year selection.
+- [x] Explicit loaded-game coverage, UTC dates and year-boundary streak semantics; no extra requests.
+- [x] 100 tests pass, including leap days, gaps, year boundaries, ties, empty years and focus behavior.

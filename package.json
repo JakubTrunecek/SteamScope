@@ -1,6 +1,6 @@
 {
   "name": "steamscope",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "private": true,
   "packageManager": "pnpm@11.19.0",
   "engines": { "node": ">=22.12.0" },

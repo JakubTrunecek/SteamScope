@@ -81,3 +81,7 @@ Game Detail adds Playing now and Community reviews. Counts and review totals wer
 ## 0.0.12 — Review discovery
 
 Library now offers on-demand review loading for games matching its name and playtime filters. A batch captures at most five games and requests one public review endpoint every 2.5 seconds; changing filters during loading does not change the captured batch. Rating and sample-size filters apply only to loaded, non-empty summaries. Review sorting places unknown percentages last, preserves genuine zero scores, and breaks equal percentages by sample size. Each row states data coverage and fetch time. Public app summaries (no player data) stay in bounded tab memory for up to 500 games until reload. No new backend routes or secrets. Validation: 97 tests (65 Worker, 32 frontend), frontend build.
+
+## 0.0.13 — Achievement year
+
+The loaded achievement collection now includes annual totals, active unlock days, longest UTC daily streak within the selected year, and best day (earliest wins ties). A twelve-month chart opens the corresponding calendar and moves keyboard focus there. Year selection follows the selected calendar month, preserving existing in-tab navigation state. Empty months mean no dated unlocks in loaded data, not proof of inactivity. Unknown dates remain excluded and reported by the collection; no additional API calls, tracking or persistence. Validation: 100 tests (65 Worker, 35 frontend) and production frontend build passed.

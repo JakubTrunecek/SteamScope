@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { AchievementsResult, Game, GlobalResult, SchemaResult } from '../../shared/api';
 import { collectionInsights, type ScannedGame } from './collectionInsights';
 import { clearCollection, readCollection, saveCollection } from './collectionSession';
+import { AchievementYear } from './AchievementYear';
 
 export function AchievementCollection({ id, games }: { id: string; games: Game[] }) {
   const [rows, setRows] = useState<ScannedGame[]>(() => readCollection(id).rows.filter(row => games.some(game => game.appId === row.game.appId)));
@@ -63,6 +64,7 @@ export function AchievementCollection({ id, games }: { id: string; games: Game[]
     <div className="result-actions"><button disabled={running || rows.length === games.length} onClick={() => void scan()}>{rows.length ? 'Load next 5 games' : 'Explore achievements'}</button>{running && <button onClick={() => { active.current?.abort(); setMessage('Stopped. Completed games are kept; continue whenever you like.'); }}>Stop loading</button>}{rows.length > 0 && <button disabled={running} onClick={() => { clearCollection(id); setRows([]); setMonth(''); setDay(''); setDayShown(30); setMessage('Results cleared. Explore again to fetch a new snapshot.'); }}>Clear loaded results</button>}</div>
     <p role="status">{message}</p>
     {!!rows.length && <><p><strong>{insights.unlocked}</strong> unlocked achievements in loaded games · {insights.undated} without a usable date</p>
+      <AchievementYear days={insights.days} month={selectedMonth ?? ''} onMonth={(value, focus) => { setMonth(value); setDay(''); setDayShown(30); if (focus) { const calendar = document.getElementById('unlock-month'); calendar?.focus(); calendar?.scrollIntoView({ block: 'center' }); } }} />
       <div className="grid"><div><h3>Rarest unlocked</h3><p className="muted">Among loaded achievements with known global percentages. Rarity is not difficulty.</p><ul>{insights.rarest.map(item => <li key={`${item.game.appId}-${item.name}`}><a href={link(item.game)}>{item.label}</a> — {item.game.name} · {item.percent}%</li>)}</ul>{!insights.rarest.length && <p>No unlocked achievements with known rarity.</p>}</div>
       <div><h3>Latest unlocks</h3><ul>{insights.latest.map(item => <li key={`${item.game.appId}-${item.name}`}><a href={link(item.game)}>{item.label}</a> — {item.game.name} · {new Date(item.unlockTime! * 1000).toISOString().slice(0, 10)}</li>)}</ul>{!insights.latest.length && <p>No dated unlocks available.</p>}</div></div>
       <h3>Completed and nearly completed</h3><p className="muted">Games with at least one achievement and no more than five remaining. Counts describe achievements, not overall game progress.</p><ul>{insights.completion.filter(item => item.remaining <= 5).map(item => <li key={item.game.appId}><a href={link(item.game)}>{item.game.name}</a> — {item.total - item.remaining}/{item.total} unlocked · {item.remaining === 0 ? 'All unlocked' : `${item.remaining} remaining`}</li>)}</ul>{!insights.completion.some(item => item.remaining <= 5) && <p>No matching games among the loaded results.</p>}
