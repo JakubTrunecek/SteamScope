@@ -64,7 +64,7 @@ describe('Collection coverage and dates', () => {
       expect(fetcher).not.toHaveBeenCalled();
       act(() => screen.getByText('Explore achievements').click());
       await act(async () => { await vi.advanceTimersByTimeAsync(2500); });
-      expect(screen.getByText(/1 of 2 games checked/)).toHaveTextContent('1 unavailable');
+      expect(screen.getByText(/^1 of 2 games checked/)).toHaveTextContent('1 unavailable');
       act(() => screen.getByText('Stop loading').click());
       await act(async () => { await vi.advanceTimersByTimeAsync(10000); });
       expect(fetcher).toHaveBeenCalledTimes(1);
