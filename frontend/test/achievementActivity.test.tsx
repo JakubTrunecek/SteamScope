@@ -32,6 +32,7 @@ describe('Achievement year', () => {
     ] }] });
     const view = render(<AchievementCollection id={id} games={[game]} />);
     try {
+      fireEvent.click(screen.getByRole('button', { name: 'Activity & calendar' }));
       expect(screen.getByRole('button', { name: '2024-01: 0 unlocks, open calendar' })).toBeDisabled();
       fireEvent.click(screen.getByRole('button', { name: '2024-02: 1 unlocks, open calendar' }));
       expect(screen.getByLabelText('Month (UTC)')).toHaveValue('2024-02');

@@ -129,3 +129,8 @@ button.calendar-day[aria-pressed='true'] { border-color: #80ddd0; outline: 2px s
 .month-track { height: .7rem; background: #243247; border-radius: .3rem; overflow: hidden; }
 .month-track > span { display: block; height: 100%; background: #78dbc9; }
 .month-chart strong { text-align: right; }
+
+.dashboard-switcher { display: flex; flex-wrap: wrap; gap: .6rem; margin: 1.5rem 0; padding-bottom: 1rem; border-bottom: 1px solid #304258; }
+.dashboard-switcher button { background: #25354a; color: #e5edf7; border: 2px solid transparent; }
+.dashboard-switcher button[aria-pressed='true'] { background: #174b4a; border-color: #80ddd0; color: #fff; }
+@media (max-width: 600px) { .dashboard-switcher button { flex: 1 1 100%; } }

@@ -1,6 +1,6 @@
 import type { ScannedGame } from './collectionInsights';
 
-interface CollectionSession { rows: ScannedGame[]; month: string; day: string }
+interface CollectionSession { rows: ScannedGame[]; month: string; day: string; view?: 'summary' | 'activity' | 'explorer' }
 // Tab memory only: never localStorage, cookies, or a server-side history.
 const sessions = new Map<string, CollectionSession>();
 export function readCollection(id: string): CollectionSession {

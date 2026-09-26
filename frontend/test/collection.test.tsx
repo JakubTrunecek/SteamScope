@@ -17,6 +17,7 @@ describe('Collection coverage and dates', () => {
       { name: 'LOCKED', achieved: false, unlockTime: 1709251199 },
     ] }], month: '', day: '' });
     let view = render(<AchievementCollection id={id} games={[game]} />);
+    act(() => screen.getByRole('button', { name: 'Activity & calendar' }).click());
     act(() => screen.getByRole('button', { name: '2024-02-29: 1 unlocks' }).click());
     expect(screen.getByRole('button', { name: '2024-02-29: 1 unlocks' })).toHaveAttribute('aria-pressed', 'true');
     const daily = () => within(screen.getByRole('region', { name: 'Selected day achievements' }));
