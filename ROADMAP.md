@@ -190,3 +190,48 @@ Home accepts SteamID64 or a numeric steamcommunity.com/profiles/ link, including
 ## 0.0.18 - Custom Steam profile addresses
 
 Home resolves /id/ links through GET /api/resolve/:vanity. The fixed Steam ResolveVanityURL v1 adapter requests individual profiles (url_type=1), validates the returned SteamID and distinguishes not-found from malformed or failed responses. Shared pacing limits, bounded cache, CORS, timeouts and sanitized errors remain in force. The UI cancels or ignores stale lookups after edits/navigation and supports retry. Accepted aliases are 1-64 ASCII letters, digits, underscores or hyphens. No arbitrary URL fetches or client secrets. Validation: 119 tests and frontend build; Worker dry run.
+
+## 0.0.19 - Visual refinement (implemented; visual review pending)
+
+Consistent surface, typography, metric tiles, profile navigation, achievement cards and selectable dashboard controls. Secondary data/export explanations use native disclosure elements; coverage stays visible. Responsive CSS adapts forms and actions to narrow screens. No API changes. Automated tests/build do not substitute for screenshot review: browser automation is unavailable, so desktop/mobile visual verification and publication are still pending.
+
+## Proposed value roadmap - owner review, not committed scope
+
+Priority reflects usefulness with existing verified data, not a claim of market uniqueness. All results must state loaded-game coverage. No inferred difficulty, completion time, stat units, or unsupported game-progress score.
+
+### 0.0.20 - Choose tonight's game (recommended next)
+
+**Question:** Which game in my own library deserves my attention tonight?
+
+Offer three transparent lenses: unplayed with strong community reviews, briefly explored, and close to unlocking every achievement. Let the player set minimum review count and maximum remaining achievements. Show a shortlist of three games with the exact evidence for each selection, plus controls to change the lens and exclude a game for this session. No black-box recommendation score or AI.
+
+**Data:** Existing library playtime, loaded review aggregates and achievements. Zero time means no recorded time, not proof a game was never opened. Review strength says nothing about the individual player's taste. Do not promise a session length.
+
+**Acceptance:** Every reason traces to displayed data; unknown data never becomes zero; rate/sample-size filters work together; results are stable on ties; exclusions reset on reload. Works without new Steam routes or persistent storage.
+
+### 0.0.21 - Achievement target board
+
+**Question:** What exactly is left in the games I want to finish?
+
+Select up to three games for a session-only target board. Compare remaining achievements, known global unlock rates and supplied visible descriptions side by side. Open any target directly in the game detail or filtered Explorer. Include separate buckets for unknown rarity and hidden locked descriptions. Make a printable/exportable checklist, with loaded snapshot time and coverage.
+
+**Data:** Existing achievement/schema/global responses; the collection would need to retain permitted schema descriptions and hidden flags. Do not guess prerequisites, difficulty, time requirements or whether an achievement is still obtainable.
+
+**Acceptance:** Targets never leak between profiles; no hidden-description spoilers; duplicate internal names across games stay separate; export includes the same selected targets as the board. No login, DB, automatic tracking or social layer.
+
+### 0.0.22 - Your gaming chapters
+
+**Question:** What did my achievement activity look like in different periods?
+
+Turn the dated unlock collection into a month-by-month story: games with the most unlocks, first/last observed unlock within each game, rare unlock highlights, and concentration across games. Compare two chosen years using a shared set of loaded games, rather than misleadingly comparing different coverage. Each item links to its underlying records.
+
+**Data:** Existing unlock timestamps and current global rates. A first observed unlock is not a purchase date or first play date; gaps are not proof of inactivity. Current rarity is not historical rarity. Avoid comparing games as if each achievement carried equal effort.
+
+**Acceptance:** UTC boundaries, missing dates and shared coverage are explicit; no invented playtime history; identical dates yield stable order; every highlighted count drills into the matching rows.
+
+### Research lane - optional extensions, not MVP commitments
+
+- **Library taste map:** Investigate availability, license/terms, consistency and caching of official genre/category metadata. If reliable, compare owned-game mix against playtime mix to surface neglected parts of the library. No fabricated genres or personality profiling; research must precede implementation.
+- **Bring-your-own snapshot comparison:** Potential manual local-file export/import to show newly unlocked achievements and exact numeric stat changes between two user-supplied snapshots. Requires explicit owner approval because this extends the current no-history scope. No background polling, DB or cloud upload. Validate file size/schema/profile/game identity; stat differences retain their original names and do not assume that larger is better. Changes in missing data must not be reported as gains/losses.
+
+**Suggested order:** finish desktop/mobile visual review, then Choose tonight's game, then the target board. Validate usefulness before adding more dashboard totals.

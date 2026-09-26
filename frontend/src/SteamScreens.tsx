@@ -28,7 +28,7 @@ function GameList({ id, games, recent = false, reviews }: { id: string; games: G
 
 function ProfileCard({ id }: { id: string }) {
   const { state, retry } = useApi<ProfileResult>(`/api/players/${id}/profile`);
-  return <section className="card"><h2>Steam profile</h2>
+  return <section className="card profile-card"><h2>Steam profile</h2>
     {state.status === 'loading' ? <p role="status">Loading profile…</p>
       : state.status === 'error' ? <ErrorState message={state.message} retry={retry} />
       : state.data.status === 'unavailable' ? <p>Steam did not return a profile for this ID.</p>
