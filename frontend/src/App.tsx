@@ -1,3 +1,4 @@
+import { PlayTogether } from './PlayTogether';
 import { parseProfileInput } from './profileInput';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { isAppId, isSteamId } from '../../shared/api';
@@ -84,19 +85,19 @@ function Home() {
 }
 
 function ProfileNav({ id }: { id: string }) {
-  return <nav aria-label="Profile"><a href={`#/profile/${id}`} aria-current={location.hash === `#/profile/${id}` ? 'page' : undefined}>Overview</a><a href={`#/profile/${id}/library`} aria-current={location.hash === `#/profile/${id}/library` ? 'page' : undefined}>Library</a></nav>;
+  return <nav aria-label="Profile"><a href={`#/profile/${id}`} aria-current={location.hash === `#/profile/${id}` ? 'page' : undefined}>Overview</a><a href={`#/profile/${id}/library`} aria-current={location.hash === `#/profile/${id}/library` ? 'page' : undefined}>Library</a><a href={`#/profile/${id}/play-together`} aria-current={location.hash === `#/profile/${id}/play-together` ? 'page' : undefined}>Play Together</a></nav>;
 }
 
 function Screen({ path }: { path: string }) {
   if (path === '/' || path === '') return <Home />;
-  const match = /^\/profile\/(\d{17})(?:\/(library)|\/game\/([1-9]\d*))?$/.exec(path);
+  const match = /^\/profile\/(\d{17})(?:\/(library|play-together)|\/game\/([1-9]\d*))?$/.exec(path);
   if (!match || !isSteamId(match[1]) || (match[3] && !isAppId(match[3]))) return <><h1>Page not found</h1><a href="#/">Return home</a></>;
   const [, id, library, appId] = match;
   return <>
     <ProfileNav id={id} />
     <p className="eyebrow">STEAM ID {id}</p>
-    <h1>{appId ? 'Game Detail' : library ? 'Library' : 'Profile Overview'}</h1>
-    {appId ? <GameSummary id={id} appId={Number(appId)} /> : library ? <Library id={id} /> : <Overview id={id} />}
+    <h1>{appId ? 'Game Detail' : library === 'play-together' ? 'Play Together' : library ? 'Library' : 'Profile Overview'}</h1>
+    {appId ? <GameSummary id={id} appId={Number(appId)} /> : library === 'play-together' ? <PlayTogether key={id} id={id} /> : library ? <Library id={id} /> : <Overview id={id} />}
     {appId && <><GameCommunity appId={appId} /><GameCapabilities id={id} appId={appId} /></>}
   </>;
 }

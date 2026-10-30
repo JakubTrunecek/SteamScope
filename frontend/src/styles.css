@@ -197,3 +197,21 @@ footer { margin-top: 36px; border-top: 1px solid var(--line); font-size: .8rem; 
   .collection-highlights > div { padding: 16px; }
   .achievement-list li { padding: 16px; }
 }
+
+/* Play Together: real library intersection; metadata remains unverified. */
+.together-id { overflow-wrap: anywhere; color: #a9b9ce; }
+.together-lobby { display: grid; gap: 16px; }
+.together-game h3 { margin-top: 0; overflow-wrap: anywhere; }
+.together-times { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.together-times strong { display: block; color: #89ead7; }
+.together-links { display: flex; gap: 20px; flex-wrap: wrap; }
+.together-map { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.together-quadrant { border: 1px solid #365663; border-radius: 14px; padding: 18px; min-width: 0; }
+.together-quadrant > h3 { margin-top: 0; }
+.together-quadrant .together-game + .together-game { margin-top: 16px; }
+.together-shortlist { border-color: #487b69; }
+.together-shortlist ul { list-style: none; padding: 0; }
+.together-shortlist li { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 10px 0; }
+.together-shortlist li span { overflow-wrap: anywhere; }
+.together button[aria-pressed="false"] { background: #203745; color: #d0e8e4; border: 1px solid #43616a; }
+@media (max-width: 700px) { .together-map { grid-template-columns: 1fr; } .together .input-row { flex-direction: column; } .together-shortlist li { align-items: flex-start; flex-direction: column; } }

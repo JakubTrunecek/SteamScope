@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { invalidateLibraryCache, readLibraryCache, writeLibraryCache } from './libraryCache';
 import type { ApiErrorCode } from '../../shared/api';
 
 const messages: Record<ApiErrorCode, string> = {
@@ -21,6 +22,8 @@ export function useApi<T>(path: string) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 12000);
     setState({ status: 'loading' });
+    const cached = attempt === 0 ? readLibraryCache(path) : undefined;
+    if (cached) { setState({ status: 'ready', data: cached as T }); clearTimeout(timeout); return () => { active = false; controller.abort(); }; }
     async function load() {
       try {
         const base = import.meta.env.VITE_API_BASE_URL;
@@ -29,7 +32,7 @@ export function useApi<T>(path: string) {
         const body = await response.json();
         if (!response.ok) throw new Error(messages[body.error as ApiErrorCode] ?? 'Unable to load this data. Please try again.');
         if (!body || !['available', 'unavailable'].includes(body.status)) throw new Error('The server returned an unexpected response.');
-        if (active) setState({ status: 'ready', data: body as T });
+        if (active) { writeLibraryCache(path, body); setState({ status: 'ready', data: body as T }); }
       } catch (error) {
         if (active) setState({ status: 'error', message: controller.signal.aborted
           ? 'The request timed out. Please try again.'
@@ -39,5 +42,5 @@ export function useApi<T>(path: string) {
     void load();
     return () => { active = false; clearTimeout(timeout); controller.abort(); };
   }, [path, attempt]);
-  return { state, retry: () => setAttempt(value => value + 1) };
+  return { state, retry: () => { invalidateLibraryCache(path); setAttempt(value => value + 1); } };
 }

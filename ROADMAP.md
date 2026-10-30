@@ -235,3 +235,28 @@ Turn the dated unlock collection into a month-by-month story: games with the mos
 - **Bring-your-own snapshot comparison:** Potential manual local-file export/import to show newly unlocked achievements and exact numeric stat changes between two user-supplied snapshots. Requires explicit owner approval because this extends the current no-history scope. No background polling, DB or cloud upload. Validate file size/schema/profile/game identity; stat differences retain their original names and do not assume that larger is better. Changes in missing data must not be reported as gains/losses.
 
 **Suggested order:** finish desktop/mobile visual review, then Choose tonight's game, then the target board. Validate usefulness before adding more dashboard totals.
+
+## Current priority - locked 2026-10-28
+
+Play Together supersedes the uncommitted 0.0.20-0.0.22 ordering above. See [locked delivery plan](docs/PLAY_TOGETHER_PLAN.md). First phase: shared libraries, verified online-co-op constraints and explainable recommendations for two players. Metadata audit and independent QA planning precede implementation. Owner acceptance precedes production deployment. Discovery outside shared ownership is a separate second phase.
+
+## Planned extension - Login and shared Play Together board (owner requested 2026-10-29)
+
+**Question:** How can I leave a game recommendation for my friend so we can choose what to play together later?
+
+- [ ] Add login with verified account ownership; entering a public Steam profile ID remains browsing, not authentication. Evaluate Steam sign-in before choosing the authentication implementation.
+- [ ] Invite a friend to a private shared board through a shareable invitation they explicitly accept.
+- [ ] Pin a game for the other person, with an optional note such as "We should try this together". Show who recommended it and whom it is for.
+- [ ] Persist pins and notes across visits and devices, so the friend can see them after signing in even when the sender is offline.
+- [ ] Let the recipient mark a recommendation as interested, later or pass, and let the pair shortlist games for Tonight.
+- [ ] Link each pin to its game detail and distinguish shared ownership, one-player ownership and unknown library visibility. A pin is a recommendation, not proof of ownership or online co-op support.
+
+**Scope change:** This explicitly planned post-MVP phase introduces authentication, a database and limited sharing between invited users. It does not retroactively change the original MVP exclusions or add persistence to the current session-only prototype. Implement after the first Play Together shared-library flow; discovery of games neither player owns remains a separate feature.
+
+**Acceptance:** Both participants see the same saved board after reload and on another device; only authorized members can read or change it; invitations can be revoked; users can remove their pins and leave a board. Verify ownership server-side rather than trusting a supplied SteamID. Define account/data deletion and select authentication/storage architecture before implementation. No public social feed, chat or notifications required for this phase.
+
+### Play Together delivery increment - 2026-10-30 (implemented locally; owner review pending)
+
+First application increment connects two real libraries using existing API routes: friend profile input, exact AppID intersection, Lobby, recorded-playtime Map and page-local Tonight pins/exclusions. Reuse library responses in bounded tab memory with a short expiry. Online-co-op verification and taste recommendations remain pending metadata decisions; this increment must not present shared games as confirmed co-op matches. Login and the persistent shared board follow separately. Automated QA and owner review precede production release.
+
+Validation: 126 automated tests, typechecks and frontend build pass. Live pair returned 56 shared games across libraries of 256 and 121 games. Independent focused QA passed; rendered desktop/mobile review and production release remain pending.
